@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Channel {
+  SLACK
+  MESSENGER
+}
+
+model users {
+  id        String     @id @default(uuid())
+  username  String
+  password  String
+  name      String
+  address   String
+  role_id   String     @unique
+  role      roles      @relation(fields: [role_id], references: [id])
+  create_at DateTime   @default(now())
+  comments  comments[]
+  posts     posts[]
+  plans     plans[]
+}
+
+model roles {
+  id    String @id @default(uuid())
+  name  String
+  users users?
+}
+
+model comments {
+  id           String   @id @default(uuid())
+  user_id      String
+  user         users    @relation(fields: [user_id], references: [id])
+  comment_date DateTime @default(now())
+  content      String
+  post_id      String
+  post         posts    @relation(fields: [post_id], references: [id])
+}
+
+model posts {
+  id          String        @id @default(uuid())
+  comments    comments[]
+  title       String
+  content     String
+  user_id     String
+  user        users         @relation(fields: [user_id], references: [id])
+  post_date   DateTime      @default(now())
+  update_date DateTime      @updatedAt
+  post_images post_images[]
+}
+
+model plans {
+  id            String          @id @default(uuid())
+  user_id       String
+  user          users           @relation(fields: [user_id], references: [id])
+  title         String
+  date          DateTime
+  state         String
+  activity_id   String
+  activity      activities      @relation(fields: [activity_id], references: [id])
+  notifications notifications[]
+}
+
+model notifications {
+  id      String   @id @default(uuid())
+  title   String
+  plan_id String
+  plan    plans    @relation(fields: [plan_id], references: [id])
+  channel Channel
+  sent_at DateTime
+  state   String
+  message    messages @relation(fields: [message_id], references: [id])
+  message_id String   @unique
+}
+
+model messages {
+  id            String         @id @default(uuid())
+  text          String
+  notifications notifications?
+  create_at     DateTime       @default(now())
+}
+
+model activities {
+  id         String   @id @default(uuid())
+  plans      plans[]
+  name       String
+  start_time DateTime
+  end_time   DateTime
+}
+
+model post_images {
+  id        String @id @default(uuid())
+  post_id   String
+  post      posts  @relation(fields: [post_id], references: [id])
+  image_url String
+}
