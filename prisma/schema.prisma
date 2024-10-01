@@ -20,12 +20,12 @@ enum Channel {
 
 model users {
   id        String     @id @default(uuid())
-  username  String
+  username  String     @unique
   password  String
-  name      String
-  address   String
-  role_id   String     @unique
-  role      roles      @relation(fields: [role_id], references: [id])
+  name      String?
+  address   String?
+  role_id   String?    @unique
+  role      roles?     @relation(fields: [role_id], references: [id])
   create_at DateTime   @default(now())
   comments  comments[]
   posts     posts[]
@@ -73,13 +73,13 @@ model plans {
 }
 
 model notifications {
-  id      String   @id @default(uuid())
-  title   String
-  plan_id String
-  plan    plans    @relation(fields: [plan_id], references: [id])
-  channel Channel
-  sent_at DateTime
-  state   String
+  id         String   @id @default(uuid())
+  title      String
+  plan_id    String
+  plan       plans    @relation(fields: [plan_id], references: [id])
+  channel    Channel
+  sent_at    DateTime
+  state      String
   message    messages @relation(fields: [message_id], references: [id])
   message_id String   @unique
 }
