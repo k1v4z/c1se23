@@ -1,22 +1,22 @@
 const express = require('express')
 const AuthController = require('../controller/AuthController')
-const router = express.Router()
 
-module.exports = new class AuthRoute{
-    constructor(){
+module.exports = new class AuthRoute {
+    constructor() {
         this.router = express.Router()
         this.initRoutes()
     }
 
-    initRoutes(){
+    initRoutes() {
         this.router.post('/sign-up', AuthController.signUp)
+        //this.router.post('/login', AuthController.login)
     }
 
-    getRoutes(){
+    getRoutes() {
         return this.router
     }
 
-    useRoutes(app){
+    useRoutes(app) {
         app.use('/api/v1', this.getRoutes())
     }
 }   
