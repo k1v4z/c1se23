@@ -1,10 +1,17 @@
 const resultCodes = {
     register: {
-        success: 101,
-        fail: 102,
-        invalid: 103,
-        error: 104,
-        userExisted: 105
+        success: "REG01",
+        fail: "REG02",
+        invalid: "REG03",
+        error: "REG04",
+        userExisted: "REG05"
+    },
+    login: {
+        success: "LOG01",
+        fail: "LOG02",
+        invalid: "LOG03",
+        error: "LOG04",
+        userNotExist: "LOG05"
     }
 }
 
