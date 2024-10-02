@@ -2,25 +2,31 @@ const resultCodes = require("../constants/ResultCode");
 const UserSchema = require("../schemas/UserSchema");
 
 module.exports = class AuthService {
-    constructor(repository) {
-        this.repository = repository
+    constructor(container) {
+        this.userRepository = container.get('userRepository')
+        this.authRepository = container.get('authRepository')
     }
 
     async signUp(authBody) {
         //Validate username, password
-        if (!UserSchema.validateAuthUser(authBody).success) {
-            return UserSchema.validateAuthUser(authBody).error
-        }
         try {
-            const user = await this.repository.getUsername(authBody.username);
+            const validatation = UserSchema.validateAuthUser(authBody)
+            if (!validatation.success) {
+                return validatation.error
+            }
+            //Check user existed
+            const user = await userRepository.getUsername(authBody.username);
 
             if (!user) {
-                await this.repository.createUser(authBody)
+                const userCreated = await authRepository.signUp(authBody)
 
                 return {
                     code: resultCodes.register.success,
                     message: "Sign up successful",
-                    user: authBody.username
+                    user: {
+                        id: userCreated.id,
+                        username:userCreated.username
+                    }
                 }
             } else {
                 return {
@@ -36,6 +42,16 @@ module.exports = class AuthService {
                 message: "Error when processing, try again later"
             }
         }
+    }
 
+    async login(authBody) {
+        try{
+            const validatation = UserSchema.validateAuthUser(authBody)
+            if (!validatation.success) {
+                return validatation.error
+            }
+        }catch(err){
+
+        }
     }
 }
