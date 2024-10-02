@@ -1,7 +1,7 @@
 const { z } = require('zod')
 
-module.exports = new class UserSchema{
-    getAuthUserSchema(){
+module.exports = new class UserSchema {
+    getAuthUserSchema() {
         const authSchema = z.object({
             username: z.string()
                 .min(6, "Username at least 6 characters")
@@ -9,13 +9,14 @@ module.exports = new class UserSchema{
             password: z.string()
                 .min(6, "Password at least 6 characters")
                 .max(255, "Password maximum 255 characters")
+                .regex(/[!@#$%^&*(),.?":{}|<>]/, "Password at least one special character")
         })
 
         return authSchema
     }
 
     //Validate login and sign up
-    validateAuthUser(authBody){
+    validateAuthUser(authBody) {
         return this.getAuthUserSchema().safeParse(authBody)
     }
 }
