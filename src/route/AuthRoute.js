@@ -9,7 +9,7 @@ module.exports = new class AuthRoute {
 
     initRoutes() {
         this.router.post('/sign-up', AuthController.signUp)
-        //this.router.post('/login', AuthController.login)
+        this.router.post('/login', AuthController.login)
     }
 
     getRoutes() {
