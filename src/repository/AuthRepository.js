@@ -1,15 +1,10 @@
-var bcrypt = require('bcryptjs');
 const prisma = require("../../prisma/db");
-const salt = require('../helper/BcryptHelper');
 
 module.exports = class AuthRepository {
-    //Auth params meanings username, password
-    async signUp(authParams) {
-        var hashPassword = bcrypt.hashSync(authParams.password, salt)
-        
+    async signUp(username, hashPassword) {
         const user = await prisma.users.create({
             data: {
-                username: authParams.username,
+                username: username,
                 password: hashPassword
             }
         })
@@ -17,7 +12,16 @@ module.exports = class AuthRepository {
         return user
     }
 
-    async login(){
-        
+    async getHashPassword(username){
+        const hashPassword = await prisma.users.findUnique({
+            where:{
+                username: username
+            },
+            select:{
+                password: true
+            }
+        })
+
+        return hashPassword
     }
 }
