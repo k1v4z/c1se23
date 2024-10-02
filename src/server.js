@@ -1,18 +1,10 @@
 require('dotenv').config();
-
 const express = require('express');
-const AuthRoute = require('./route/AuthRoute');
+const bootstrap = require('./loader');
 const app = express()
 const port = process.env.SERVER_PORT
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-
-app.get('/', (req, res) => {
-    res.send("Hello");
-})
-
-AuthRoute.useRoutes(app)
+bootstrap(app)
 
 app.listen(port, () => {
     console.log(`http://${process.env.SERVER_HOST}:${port}`);
