@@ -1,22 +1,15 @@
-const express = require('express')
 const AuthController = require('../controller/AuthController')
+const BaseRoute = require('./BaseRoute')
 
-module.exports = new class AuthRoute {
+module.exports = new class AuthRoute extends BaseRoute {
     constructor() {
-        this.router = express.Router()
-        this.initRoutes()
+        super()
     }
 
     initRoutes() {
         this.router.post('/sign-up', AuthController.signUp)
         this.router.post('/login', AuthController.login)
+        this.router.post('/logout', AuthController.logout)
     }
 
-    getRoutes() {
-        return this.router
-    }
-
-    useRoutes(app) {
-        app.use('/api/v1', this.getRoutes())
-    }
 }   
