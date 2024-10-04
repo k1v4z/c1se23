@@ -1,15 +1,16 @@
 require('dotenv').config({ path: '../../.env' });
-const resultCodes = require("../constants/ResultCode");
+const resultCodes = require("../constants/resultCode");
 const UserSchema = require("../schemas/UserSchema");
-var bcrypt = require('bcryptjs');
-var jwt = require('jsonwebtoken');
-const salt = require('../helper/BcryptHelper');
-const secretKey = process.env.SERCRET_KEY
 
 module.exports = class AuthService {
     constructor(container) {
-        this.userRepository = container.get('userRepository')
-        this.authRepository = container.get('authRepository')
+        const serviceContainer = container?.get('serviceContainer')
+        const repositoryContainer = container?.get('repositoryContainer')
+
+        this.userRepository = repositoryContainer?.get('userRepository')
+        this.authRepository = repositoryContainer?.get('authRepository')
+        this.tokenService = serviceContainer?.get('tokenService')
+        this.passwordHashingService = serviceContainer?.get('passwordHashingService')
     }
 
     async signUp(authBody) {
@@ -24,7 +25,7 @@ module.exports = class AuthService {
             const user = await this.userRepository.getUsername(authBody.username);
 
             if (!user) {
-                var hashPassword = bcrypt.hashSync(authBody.password, salt)
+                var hashPassword = this.passwordHashingService.hashPassword(authBody.password)
                 const userCreated = await this.authRepository.signUp(authBody.username, hashPassword)
                 return {
                     code: resultCodes.register.success,
@@ -62,12 +63,13 @@ module.exports = class AuthService {
                 //Hash password
                 const { password } = await this.authRepository.getHashPassword(authBody.username)
 
-                if (bcrypt.compareSync(authBody.password, password)) {
+                if (this.passwordHashingService.compareHashPassword(authBody.password, password)) {
                     const payload = {
                         userId: user.id,
                         username: user.username
                     }
-                    const accessToken = this.generateAccessToken(payload)
+
+                    const accessToken = this.tokenService.generateAccessToken(payload)
 
                     return {
                         code: resultCodes.login.success,
@@ -93,16 +95,17 @@ module.exports = class AuthService {
         }
     }
 
-    generateAccessToken(payload) {
-        const token = jwt.sign(
-            payload,
-            secretKey,
-            {
-                algorithm: "HS256",
-                expiresIn: "30m"
+    logout(token) {
+        if (this.tokenService.checkToken(token)) {
+            return {
+                code: resultCodes.logout.success,
+                message: "Logout successfully"
             }
-        )
+        }
 
-        return token
+        return {
+            code: resultCodes.logout.tokenNotExisted,
+            message: "Token don't exist"
+        }
     }
 }
