@@ -1,6 +1,6 @@
 const BaseContainer = require("./BaseContainer")
 
-module.exports = class RepositoryContainer extends BaseContainer {
+module.exports = class ServiceContainer extends BaseContainer {
     constructor() {
         super()
     }
