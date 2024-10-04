@@ -12,6 +12,11 @@ const resultCodes = {
         invalid: "LOG03",
         error: "LOG04",
         userNotExist: "LOG05"
+    },
+    logout: {
+        success: "LOGOUT01",
+        fail: "LOGOUT02",
+        tokenNotExisted: "LOGOUT03"
     }
 }
 
