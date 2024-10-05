@@ -1,16 +1,19 @@
 require('dotenv').config({ path: '../../.env' });
-const resultCodes = require("../constants/resultCode");
+const containerNames = require('../constants/container_name/containerNames');
+const resultCodes = require("../constants/http_response/resultCode");
+const repositoryNames = require('../constants/repository_name/repositoryNames');
+const serviceNames = require('../constants/service_name/serviceNames');
 const UserSchema = require("../schemas/UserSchema");
 
 module.exports = class AuthService {
     constructor(container) {
-        const serviceContainer = container?.get('serviceContainer')
-        const repositoryContainer = container?.get('repositoryContainer')
+        const serviceContainer = container?.get(containerNames.SERVICE_CONTAINER)
+        const repositoryContainer = container?.get(containerNames.REPOSITORY_CONTAINER)
 
-        this.userRepository = repositoryContainer?.get('userRepository')
-        this.authRepository = repositoryContainer?.get('authRepository')
-        this.tokenService = serviceContainer?.get('tokenService')
-        this.passwordHashingService = serviceContainer?.get('passwordHashingService')
+        this.userRepository = repositoryContainer?.get(repositoryNames.USER_REPOSITORY)
+        this.authRepository = repositoryContainer?.get(repositoryNames.AUTH_REPOSITORY)
+        this.tokenService = serviceContainer?.get(serviceNames.TOKEN_SERVICE)
+        this.passwordHashingService = serviceContainer?.get(serviceNames.PASSWORD_HASHING_SERVICE)
     }
 
     async signUp(authBody) {
