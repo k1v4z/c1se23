@@ -1,20 +1,22 @@
 const AuthService = require("../service/AuthService");
-const resultCodes = require("../constants/resultCode");
+const resultCodes = require("../constants/http_response/resultCode");
 const appContainer = require("../container/registration/containerRegistration");
 
 
 module.exports = new class AuthController {
-    async signUp(req, res) {
+    constructor() {
+        this.authService = new AuthService(appContainer) //inject container
+    }
+
+    signUp = async (req, res) => {
         const authBody = req.body
-        const authService = new AuthService(appContainer); //inject container
-        const signUpState = await authService.signUp(authBody);
+        const signUpState = await this.authService.signUp(authBody);
         return res.status(signUpState.code == resultCodes.register.success ? 201 : 200).json(signUpState)
     }
 
-    async login(req, res) {
+    login = async (req, res) => {
         const authBody = req.body
-        const authService = new AuthService(appContainer)
-        const login = await authService.login(authBody)
+        const login = await this.authService.login(authBody)
         if (login.accessToken) {
             res.cookie('accessToken', login.accessToken, {
                 signed: true,
@@ -27,10 +29,9 @@ module.exports = new class AuthController {
         return res.status(login.code == 101 ? 201 : 200).json(login)
     }
 
-    async logout(req, res) {
+    logout = async (req, res) => {
         const accessToken = req.signedCookies.accessToken
-        const authService = new AuthService(appContainer)
-        const logout = authService.logout(accessToken)
+        const logout = this.authService.logout(accessToken)
 
         if (logout.code == resultCodes.logout.success) {
             res.clearCookie('accessToken', {
