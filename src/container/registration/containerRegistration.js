@@ -1,12 +1,13 @@
 const AppContainer = require("../AppContainer");
+const containerNames = require("../../constants/container_name/containerNames");
 const appContainer = new AppContainer()
 
 //Service Container
 const serviceContainer = require("./serviceRegistration");
-appContainer.register('serviceContainer', serviceContainer)
+appContainer.register(containerNames.SERVICE_CONTAINER, serviceContainer)
 
 //Repo Container
 const repositoryContainer = require("./repositoryRegistration");
-appContainer.register('repositoryContainer', repositoryContainer)
+appContainer.register(containerNames.REPOSITORY_CONTAINER, repositoryContainer)
 
 module.exports = appContainer
