@@ -6,7 +6,7 @@ module.exports = new class AuthRoute extends BaseRoute {
         super()
     }
 
-    initRoutes() {
+    initRoutes() {     
         this.router.post('/sign-up', AuthController.signUp)
         this.router.post('/login', AuthController.login)
         this.router.post('/logout', AuthController.logout)
