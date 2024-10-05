@@ -33,9 +33,25 @@ model users {
 }
 
 model roles {
-  id    String @id @default(uuid())
-  name  String
-  users users?
+  id               String             @id @default(uuid())
+  name             String
+  users            users?
+  role_permissions role_permissions[]
+}
+
+model permissions {
+  id               String             @id @default(uuid())
+  name             String
+  role_permissions role_permissions[]
+}
+
+model role_permissions {
+  roleId       String
+  permissionId String
+  role         roles       @relation(fields: [roleId], references: [id])
+  permission   permissions @relation(fields: [permissionId], references: [id])
+
+  @@id([roleId, permissionId])
 }
 
 model comments {
@@ -61,27 +77,37 @@ model posts {
 }
 
 model plans {
-  id            String          @id @default(uuid())
-  user_id       String
-  user          users           @relation(fields: [user_id], references: [id])
-  title         String
-  date          DateTime
-  state         String
-  activity_id   String
-  activity      activities      @relation(fields: [activity_id], references: [id])
-  notifications notifications[]
+  id             String       @id @default(uuid())
+  user_id        String
+  user           users        @relation(fields: [user_id], references: [id])
+  title          String
+  date           DateTime
+  state          String
+  location       String
+  transportation String
+  money          Int
+  kind_id        String
+  kind           kinds        @relation(fields: [kind_id], references: [id])
+  isChildren     Boolean
+  activities     activities[]
+}
+
+model kinds {
+  id    String  @id @default(uuid())
+  name  String
+  plans plans[]
 }
 
 model notifications {
-  id         String   @id @default(uuid())
-  title      String
-  plan_id    String
-  plan       plans    @relation(fields: [plan_id], references: [id])
-  channel    Channel
-  sent_at    DateTime
-  state      String
-  message    messages @relation(fields: [message_id], references: [id])
-  message_id String   @unique
+  id          String     @id @default(uuid())
+  title       String
+  activity_id String     @unique
+  activity    activities @relation(fields: [activity_id], references: [id])
+  channel     Channel
+  sent_at     DateTime
+  state       String
+  message     messages   @relation(fields: [message_id], references: [id])
+  message_id  String     @unique
 }
 
 model messages {
@@ -92,11 +118,23 @@ model messages {
 }
 
 model activities {
-  id         String   @id @default(uuid())
-  plans      plans[]
-  name       String
-  start_time DateTime
-  end_time   DateTime
+  id              String           @id @default(uuid())
+  plan_id         String
+  plan            plans            @relation(fields: [plan_id], references: [id])
+  name            String
+  start_time      DateTime
+  end_time        DateTime
+  longitude       Decimal
+  latitude        Decimal
+  activity_thumbs activity_thumbs?
+  notifications   notifications?
+}
+
+model activity_thumbs {
+  id          String      @id @default(uuid())
+  activity_id String?     @unique
+  image_url   String?
+  activity    activities? @relation(fields: [activity_id], references: [id])
 }
 
 model post_images {
