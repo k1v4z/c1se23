@@ -1,13 +1,13 @@
 module.exports = class BaseContainer{
-    constructor(){
+    constructor() {
         this.dependencies = {}
     }
 
-    register(key, value){
-        this.dependencies[key] = value
+    register(key, value) {
+        this.dependencies[key] = value(this)
     }
 
-    get(key){
+    get(key) {
         if (!this.dependencies[key]) {
             throw new Error(`Dependencies ${key} not found.`)
         }
