@@ -1,11 +1,13 @@
-const AuthService = require("../service/AuthService");
 const resultCodes = require("../constants/http_response/resultCode");
 const appContainer = require("../container/registration/containerRegistration");
+const containerNames = require("../constants/container_name/containerNames");
+const serviceNames = require("../constants/service_name/serviceNames");
 
 
 module.exports = new class AuthController {
     constructor() {
-        this.authService = new AuthService(appContainer) //inject container
+        const serviceContainer = appContainer.get(containerNames.SERVICE_CONTAINER)
+        this.authService = serviceContainer.get(serviceNames.AUTH_SERVICE)
     }
 
     signUp = async (req, res) => {
