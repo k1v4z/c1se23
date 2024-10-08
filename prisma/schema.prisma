@@ -82,7 +82,7 @@ model plans {
   user           users        @relation(fields: [user_id], references: [id])
   title          String
   date           DateTime
-  state          String
+  state          String       @default("pending")
   location       String
   transportation String
   money          Int
@@ -94,7 +94,7 @@ model plans {
 
 model kinds {
   id    String  @id @default(uuid())
-  name  String
+  name  String  @unique
   plans plans[]
 }
 
