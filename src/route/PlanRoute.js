@@ -1,4 +1,5 @@
 const PlanController = require("../controller/PlanController")
+const AuthMiddleware = require("../middleware/AuthMiddleware")
 const BaseRoute = require("./BaseRoute")
 
 module.exports = new class PlanRoute extends BaseRoute{
@@ -7,6 +8,6 @@ module.exports = new class PlanRoute extends BaseRoute{
     }
 
     initRoutes(){
-        this.router.post('/create-plan', PlanController.createPlan)
+        this.router.post('/create-plan',AuthMiddleware.authenticateUser,PlanController.createPlan)
     }
 }
