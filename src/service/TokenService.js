@@ -2,7 +2,7 @@ var jwt = require('jsonwebtoken')
 const secretKey = process.env.SERCRET_KEY
 
 module.exports = class TokenService{
-    constructor(container){
+    constructor(){
         
     }
 
@@ -21,6 +21,11 @@ module.exports = class TokenService{
 
     checkToken(token){
         return token ? true : false
+    }
+
+    verifyToken(token){
+        const payload = jwt.verify(token, secretKey)
+        return payload
     }
     
 }

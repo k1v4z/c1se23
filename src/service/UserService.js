@@ -1,3 +1,11 @@
 module.exports = class UserService{
-    //User Service
+    constructor(userRepository) {
+        this.userRepository = userRepository
+    }
+
+    //Get user by username
+    async getUsername(username){
+        const user = await this.userRepository.getUsername(username)
+        return user
+    }
 }

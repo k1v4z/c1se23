@@ -1,19 +1,13 @@
 require('dotenv').config({ path: '../../.env' });
-const containerNames = require('../constants/container_name/containerNames');
 const resultCodes = require("../constants/http_response/resultCode");
-const repositoryNames = require('../constants/repository_name/repositoryNames');
-const serviceNames = require('../constants/service_name/serviceNames');
 const UserSchema = require("../schemas/UserSchema");
 
 module.exports = class AuthService {
-    constructor(container) {
-        const serviceContainer = container?.get(containerNames.SERVICE_CONTAINER)
-        const repositoryContainer = container?.get(containerNames.REPOSITORY_CONTAINER)
-
-        this.userRepository = repositoryContainer?.get(repositoryNames.USER_REPOSITORY)
-        this.authRepository = repositoryContainer?.get(repositoryNames.AUTH_REPOSITORY)
-        this.tokenService = serviceContainer?.get(serviceNames.TOKEN_SERVICE)
-        this.passwordHashingService = serviceContainer?.get(serviceNames.PASSWORD_HASHING_SERVICE)
+    constructor(authRepository, tokenService, passwordHashingService, userService) {
+        this.authRepository = authRepository
+        this.tokenService = tokenService
+        this.passwordHashingService = passwordHashingService
+        this.userService = userService
     }
 
     async signUp(authBody) {
@@ -25,7 +19,7 @@ module.exports = class AuthService {
             }
 
             //Check user existed
-            const user = await this.userRepository.getUsername(authBody.username);
+            const user = await this.userService.getUsername(authBody.username);
 
             if (!user) {
                 var hashPassword = this.passwordHashingService.hashPassword(authBody.password)
@@ -60,7 +54,7 @@ module.exports = class AuthService {
                 return validatation.error
             }
 
-            const user = await this.userRepository.getUsername(authBody.username);
+            const user = await this.userService.getUsername(authBody.username);
             //If user existed
             if (user) {
                 //Hash password
