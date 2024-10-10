@@ -11,9 +11,7 @@ module.exports = new class PlanController {
 
     createPlan = async (req, res) => {
         const planBody = req.body
-        
         const newPlan = await this.planService.createPlan(planBody)
-        //console.log(newPlan.error);
 
         if (newPlan.statusCode == planCodes.create.invalid) {
             return res.status(400).json({
@@ -30,5 +28,52 @@ module.exports = new class PlanController {
         return res.status(500).json({
             message: "Having trouble when processing"
         })
+    }
+
+    getPlan = async (req, res) => {
+        const userId = req.body.user_id
+        const plans = await this.planService.getPlan(userId)
+
+        if (plans.statusCode == planCodes.get.success) {
+            return res.status(200).json(plans)
+        } else {
+            return res.status(500).json({
+                message: "Error when processing, try again later"
+            })
+        }
+    }
+
+    deletePlan = async (req, res) => {
+        const planId = req.params.id
+        const deletePlan = await this.planService.deletePlan(planId)
+
+        if (deletePlan.statusCode == planCodes.delete.success) {
+            return res.status(200).json({
+                code: deletePlan.statusCode,
+                message: "Delete Plan Successfully"
+            })
+        } else {
+            return res.status(500).json({
+                code: deletePlan.statusCode,
+                message: "Error when delete plan, try again later"
+            })
+        }
+    }
+
+    editPlan = async(req, res) => {
+        const planId = req.params.id
+        const planData = req.body
+        
+        try{
+            await this.planService.editPlan(planId, planData)
+            return res.status(200).json({
+                message: "update successful "
+            })
+        }catch(err){
+            console.log(err);
+            return res.status(500).json({
+                message: "Error when update plan, try again later"
+            })
+        }
     }
 }
