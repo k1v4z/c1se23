@@ -5,6 +5,7 @@ module.exports = new class MainPlanSchema {
     getActivitySchema() {
         const activitySchema = z.object({
             name: z.string(),
+            image_url: z.string(),
             start_time: z.string().refine((val) => iso8601DateRegex.test(val), {
                 message: "Invalid ISO 8601 date format"
             }),
@@ -26,6 +27,7 @@ module.exports = new class MainPlanSchema {
                 message: "Invalid ISO 8601 date format"
             }),
             location: z.string(),
+            image_url: z.string(),
             transportation: z.string(),
             money: z.number(),
             state: z.enum(["pending", "confirmed", "cancelled"]), // if there are specific states
