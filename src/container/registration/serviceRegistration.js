@@ -57,4 +57,10 @@ serviceContainer.register(serviceNames.PLAN_SERVICE, (container) => {
     return new PlanService(planRepository, kindService, datePlanService) //inject plan repo and kind service
 })
 
+//Plan service
+const ImageService = require("../../service/ImageService");
+serviceContainer.register(serviceNames.IMAGE_SERVICE, (container) => {
+    return new ImageService()
+})
+
 module.exports = serviceContainer
