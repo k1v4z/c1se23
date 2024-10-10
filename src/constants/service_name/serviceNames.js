@@ -5,5 +5,6 @@ module.exports = {
     PASSWORD_HASHING_SERVICE: 'passwordHashingService',
     PLAN_SERVICE: 'planService',
     KIND_SERVICE: 'kindService',
-    DATE_PLAN_SERVICE: 'datePlanService'
+    DATE_PLAN_SERVICE: 'datePlanService',
+    IMAGE_SERVICE: 'imageService'
 }
