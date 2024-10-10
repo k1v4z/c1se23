@@ -66,6 +66,8 @@ module.exports = class AuthService {
                         username: user.username
                     }
 
+                    // IMPLEMENT LOGIC REFRESH TOKEN LATER
+                    // ....
                     const accessToken = this.tokenService.generateAccessToken(payload)
 
                     return {
