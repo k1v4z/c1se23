@@ -13,7 +13,15 @@ module.exports = new class AuthController {
     signUp = async (req, res) => {
         const authBody = req.body
         const signUpState = await this.authService.signUp(authBody);
-        return res.status(signUpState.code == resultCodes.register.success ? 201 : 200).json(signUpState)
+        if (signUpState.code == resultCodes.register.success) {
+            return res.status(201).json(signUpState)
+        } else if (signUpState.code == resultCodes.register.userExisted) {
+            return res.status(200).json(signUpState)
+        }
+
+        return res.status(500).json({
+            message: "Error when sign up, try again later"
+        })
     }
 
     login = async (req, res) => {
@@ -24,7 +32,7 @@ module.exports = new class AuthController {
                 signed: true,
                 httpOnly: true,
                 maxAge: 30 * 60 * 1000,
-                sameSite: 'None'
+                sameSite: 'strict'
             })
         }
 
@@ -43,5 +51,19 @@ module.exports = new class AuthController {
         }
 
         return res.status(200).json(logout)
+    }
+
+    checkTokenInCookie = (req, res) => {
+        const accessToken = req.signedCookies.accessToken
+        
+        if (accessToken) {
+            return res.status(200).json({
+                haveToken: true
+            })
+        }
+
+        return res.status(200).json({
+            haveToken: false
+        })
     }
 }
