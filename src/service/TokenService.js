@@ -23,6 +23,7 @@ module.exports = class TokenService{
         return token ? true : false
     }
 
+
     verifyToken(token){
         const payload = jwt.verify(token, secretKey)
         return payload

@@ -15,7 +15,7 @@ module.exports = class AuthService {
         try {
             const validatation = UserSchema.validateAuthUser(authBody)
             if (!validatation.success) {
-                return validatation.error
+                return validatation.error.errors
             }
 
             //Check user existed
@@ -51,7 +51,11 @@ module.exports = class AuthService {
         try {
             const validatation = UserSchema.validateAuthUser(authBody)
             if (!validatation.success) {
-                return validatation.error
+                return {
+                    code: resultCodes.login.invalid,
+                    message: "Username or password is invalid",
+                    err: validatation.error.errors
+                }
             }
 
             const user = await this.userService.getUsername(authBody.username);
@@ -73,6 +77,7 @@ module.exports = class AuthService {
                     return {
                         code: resultCodes.login.success,
                         message: "Login successful",
+                        payload,
                         accessToken: accessToken
                     }
                 }
@@ -107,4 +112,5 @@ module.exports = class AuthService {
             message: "Token don't exist"
         }
     }
+
 }
