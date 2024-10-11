@@ -10,6 +10,7 @@ module.exports = new class UserSchema {
                 .min(6, "Password at least 6 characters")
                 .max(255, "Password maximum 255 characters")
                 .regex(/[!@#$%^&*(),.?":{}|<>]/, "Password at least one special character")
+                .regex(/\d/, "Passsword at least one number")
         })
 
         return authSchema
