@@ -1,5 +1,6 @@
 require('dotenv').config({ path: '../../.env' });
 var cookieParser = require('cookie-parser');
+const cors = require('cors')
 const express = require('express');
 
 // Load config express framework
@@ -8,6 +9,12 @@ const loadExpressConfig = (app) => {
     app.use(cookieParser(process.env.COOKIE_SIGNED));
     app.use(express.json())
     app.use(express.urlencoded({ extended: true }))
+
+    //Config cors
+    app.use(cors({
+        origin: process.env.FRONT_END_ORIGIN,
+        credentials: true
+    }))
 }
 
 module.exports = loadExpressConfig
