@@ -77,27 +77,35 @@ model posts {
 }
 
 model plans {
-  id             String       @id @default(uuid())
-  user_id        String
-  user           users        @relation(fields: [user_id], references: [id])
-  title          String
-  date           DateTime
-  state          String       @default("pending")
-  location       String
-  transportation String
-  money          Int
-  kind_id        String
-  kind           kinds        @relation(fields: [kind_id], references: [id])
-  isChildren     Boolean
-  activities     activities[]
-  plan_images    plan_images?
+  id               String             @id @default(uuid())
+  user_id          String
+  user             users              @relation(fields: [user_id], references: [id])
+  title            String
+  date             DateTime
+  state            String             @default("pending")
+  transportation   String
+  money            Int
+  kind_id          String
+  kind             kinds              @relation(fields: [kind_id], references: [id])
+  isChildren       Boolean
+  activities       activities[]
+  plan_on_province plan_on_province[]
 }
 
-model plan_images {
-  id        String  @id @default(uuid())
-  plan_id   String? @unique
-  image_url String?
-  plan      plans?  @relation(fields: [plan_id], references: [id])
+model plan_on_province {
+  plan_id     String
+  plan        plans     @relation(fields: [plan_id], references: [id])
+  province_id String
+  province    provinces @relation(fields: [province_id], references: [id])
+
+  @@id([plan_id, province_id])
+}
+
+model provinces {
+  id               String             @id @default(uuid())
+  name             String
+  imageUrl         String
+  plan_on_province plan_on_province[]
 }
 
 model kinds {
@@ -115,27 +123,46 @@ model notifications {
   sent_at     DateTime
   state       String
   message     String
-  create_at       DateTime       @default(now())
+  create_at   DateTime   @default(now())
 }
 
 model activities {
-  id              String           @id @default(uuid())
-  plan_id         String
-  plan            plans            @relation(fields: [plan_id], references: [id])
-  name            String
-  start_time      DateTime
-  end_time        DateTime
-  longitude       Decimal
-  latitude        Decimal
-  activity_thumbs activity_thumbs?
-  notifications   notifications?
+  id                   String             @id @default(uuid())
+  plan_id              String
+  activity_location_id String
+  activity_location    activity_locations @relation(fields: [activity_location_id], references: [id])
+  notifications        notifications?
+  plan                 plans              @relation(fields: [plan_id], references: [id])
+  start_date           DateTime
+  end_date             DateTime
 }
 
-model activity_thumbs {
-  id          String      @id @default(uuid())
-  activity_id String?     @unique
-  image_url   String?
-  activity    activities? @relation(fields: [activity_id], references: [id])
+model activity_locations {
+  id               String            @id @default(uuid())
+  name             String
+  address          String
+  open_at          String
+  close_at         String
+  longitude        Decimal
+  latitude         Decimal
+  imageUrl         String
+  activities       activities[]
+  locationOnTypes  locationOnTypes[]
+}
+
+model locationOnTypes {
+  activity_location_id String
+  activity_location    activity_locations @relation(fields: [activity_location_id], references: [id])
+  type_id              String
+  type                 types              @relation(fields: [type_id], references: [id])
+
+  @@unique([activity_location_id, type_id])
+}
+
+model types {
+  id              String            @id @default(uuid())
+  name            String
+  locationOnTypes locationOnTypes[]
 }
 
 model post_images {
