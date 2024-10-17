@@ -3,7 +3,6 @@ module.exports = class KindService{
         this.kindRepository = kindRepository
     }
 
-
     async getKindIdByName(kindName){
         const kindId = this.kindRepository.getKindIdByName(kindName)
         return kindId
