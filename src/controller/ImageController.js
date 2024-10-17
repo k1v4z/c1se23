@@ -8,16 +8,17 @@ module.exports = new class ImageController {
         this.imageService = serviceContainer.get(serviceNames.IMAGE_SERVICE)
     }
 
-    upload = async (req, res) => {
+    uploadImage = async (req, res) => {
         try {
             const files = req.files;
+            const folderName = req.body.folderName;
 
             // Check file uploaded ?
-            if (!files || files.length === 0) {
-                return res.status(400).send({ message: 'Please upload at least one file.' });
+            if (!files || files.length === 0 || !folderName) {
+                return res.status(400).send({ message: 'Please upload at least one file and folder name required' });
             }
 
-            const results = await this.imageService.uploadImage(files)
+            const results = await this.imageService.uploadImage(files, folderName)
 
             res.status(200).json({
                 message: 'Files uploaded and paths saved successfully.',
