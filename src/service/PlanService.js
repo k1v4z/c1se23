@@ -67,9 +67,9 @@ module.exports = class PlanService {
         }
     }
 
-    async getPlan(planId) {
+    async getPlan(planId, userId) {
         try {
-            const plans = await this.planRepository.getPlan(planId)
+            const plans = await this.planRepository.getPlan(planId, userId)
             
             return {
                 statusCode: planCodes.get.success,
