@@ -97,10 +97,11 @@ module.exports = class PlanRepository {
 
     }
 
-    async getPlan(planId) {
+    async getPlan(planId, userId) {       
         const plans = await prisma.plans.findMany({
             where: {
-                id: planId
+                id: planId,
+                user_id: userId
             },
             select: {
                 title: true,
