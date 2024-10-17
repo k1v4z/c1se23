@@ -8,6 +8,6 @@ module.exports = new class ImageRoute extends BaseRoute{
     }
 
     initRoutes(){
-        this.router.post('/upload',upload.array('images', 10) ,ImageController.upload)
+        this.router.post('/upload',upload.array('images', 10) ,ImageController.uploadImage)
     }
 }
