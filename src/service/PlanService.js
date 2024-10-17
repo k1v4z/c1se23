@@ -2,10 +2,11 @@ const planCodes = require("../constants/http_response/planCode")
 const MainPlanSchema = require("../schemas/MainPlanSchema")
 
 module.exports = class PlanService {
-    constructor(planRepository, kindService, datePlanService) {
+    constructor(planRepository, kindService, datePlanService, provinceService) {
         this.planRepository = planRepository
         this.kindService = kindService
         this.datePlanService = datePlanService
+        this.provinceService = provinceService
     }
 
     async createPlan(planBody) {
@@ -18,7 +19,7 @@ module.exports = class PlanService {
                     error: err.message
                 }
             }
-
+            // Nếu người dùng add 2 location trùng nhau thì hủy -> implement later
             const { plan } = planBody
             if (!this.datePlanService.validateDateActivities(plan)) {
                 return {
@@ -28,19 +29,12 @@ module.exports = class PlanService {
             }
 
             const kindName = plan.kind_name
+            const provinceName = plan.province_name
+
+            const [provinceResult] = await this.provinceService.getProvinceIdByName(provinceName)
             const [results] = await this.kindService.getKindIdByName(kindName) //array destructuring
             plan.kindId = results.id
-            //Pre-process data before send to repository
-            plan.activities.map((activity) => {
-                activity.activity_thumbs = {
-                    create: {
-                        image_url: activity.image_url
-                    }
-                }
-                //Delete key image url
-                delete activity.image_url
-                return activity
-            })
+            plan.provinceId = provinceResult.id
 
             const newPlan = await this.planRepository.createPlan(plan)
             return {
@@ -60,7 +54,12 @@ module.exports = class PlanService {
         try {
             const { plan } = planData
             const kindName = plan.kind_name
+            const provinceName = plan.province_name
+
             const [results] = await this.kindService.getKindIdByName(kindName)
+            const [provinceResult] = await this.provinceService.getProvinceIdByName(provinceName)
+
+            //If user change province or date, clear all activitys regarding this plan
             plan.kindId = results.id
             await this.planRepository.editPlan(planId, plan)
         } catch (err) {
@@ -68,9 +67,10 @@ module.exports = class PlanService {
         }
     }
 
-    async getPlan(userId) {
+    async getPlan(planId) {
         try {
-            const plans = await this.planRepository.getPlan(userId)
+            const plans = await this.planRepository.getPlan(planId)
+            
             return {
                 statusCode: planCodes.get.success,
                 plans
