@@ -31,8 +31,10 @@ module.exports = new class PlanController {
     }
 
     getPlan = async (req, res) => {
-        const planId = req.params.planId
-        const plans = await this.planService.getPlan(planId)
+        const planId = req.params.id
+        const userId = req.userId //get UserId from auth middleware
+        
+        const plans = await this.planService.getPlan(planId, userId)
 
         if (plans.statusCode == planCodes.get.success) {
             return res.status(200).json(plans)
