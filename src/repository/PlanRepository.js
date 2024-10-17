@@ -18,25 +18,20 @@ module.exports = class PlanRepository {
                         name: plan.kind_name
                     }
                 },
-                location: plan.location,
                 money: plan.money,
                 transportation: plan.transportation,
                 activities: {
                     create: plan.activities
                 },
-                plan_images: {
+                plan_on_province: {
                     create: {
-                        image_url: plan.image_url
+                        province_id: plan.provinceId
                     }
                 }
             },
             include: {
-                activities: {
-                    include: {
-                        activity_thumbs: true
-                    }
-                },
-                plan_images: true,
+                activities: true,
+                plan_on_province: true
             }
         })
 
@@ -102,32 +97,35 @@ module.exports = class PlanRepository {
 
     }
 
-    async getPlan(userId) {
+    async getPlan(planId) {
         const plans = await prisma.plans.findMany({
+            where: {
+                id: planId
+            },
             select: {
-                plan_images: {
-                    select: {
-                        image_url: true
-                    }
-                },
+                title: true,
+                date: true,
                 activities: {
                     select: {
                         id: true,
-                        name: true,
-                        start_time: true,
-                        end_time: true,
-                        activity_thumbs: {
+                        start_date: true,
+                        end_date: true,
+                        activity_location: true
+                    }
+                },
+                plan_on_province: {
+                    select: {
+                        province: {
                             select: {
-                                image_url: true
+                                name: true,
+                                imageUrl: true
                             }
                         }
                     }
-                },
-            },
-            where: {
-                user_id: userId,
+                }
             },
         })
+        
         return plans
     }
 
@@ -145,7 +143,7 @@ module.exports = class PlanRepository {
     }
 
     async deletePlan(planId) {
-        //Step 1: Delete all Activity_thumbs regarding Activities of Plan
+        //Step 1: Get all activities first
         const activities = await prisma.activities.findMany({
             where: {
                 plan_id: planId
@@ -159,7 +157,8 @@ module.exports = class PlanRepository {
             return activity.id
         })
 
-        const deleteAcvitityThumbs = prisma.activity_thumbs.deleteMany({
+        //Step 2: Delete notifications regarding each activity
+        const deleteNotifications = prisma.notifications.deleteMany({
             where: {
                 activity_id: {
                     in: activityId
@@ -167,34 +166,28 @@ module.exports = class PlanRepository {
             }
         })
 
-        const deleteNotifications = prisma.notifications.deleteMany({
-            where: {
-                id: {
-                    in: activityId
-                }
-            }
-        })
-
-        //Step 2: Delete all activities regarding plans
+        //Step 3: Delete all activities regarding plan
         const deleteActivities = prisma.activities.deleteMany({
             where: {
                 plan_id: planId
             }
         })
 
-        const deletePlanImages = prisma.plan_images.delete({
+        //Step 4: Delete plan on province
+        const deletePlanOnProvince = prisma.plan_on_province.deleteMany({
             where: {
                 plan_id: planId
             }
         })
 
+        //Step 5: Delete plan finally
         const deletePlan = prisma.plans.delete({
             where: {
                 id: planId
             }
         })
 
-        await prisma.$transaction([deleteAcvitityThumbs, deleteNotifications, deleteActivities, deletePlanImages, deletePlan])
+        await prisma.$transaction([deleteNotifications, deleteActivities, deletePlanOnProvince, deletePlan])
 
     }
 }
