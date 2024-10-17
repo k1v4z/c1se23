@@ -12,6 +12,7 @@ module.exports = new class AuthMiddleware {
         const accessToken = req.signedCookies.accessToken
         try {
             const payload = this.tokenService.verifyToken(accessToken)
+            req.userId = payload.userId
             next()
         } catch (err) {
             console.log(err);
