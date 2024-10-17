@@ -12,16 +12,16 @@ module.exports = class DatePlanService {
     validateDateActivities(plan) {
         const activities = plan.activities
         return activities.every((activity) => {
-            return this.compareDate(plan.date, activity.start_time, activity.end_time);
+            return this.compareDate(plan.date, activity.start_date, activity.end_date);
         })
     }
 
-    compareDate(planTime, startTime, endTime) {
+    compareDate(planTime, startDate, endDate) {
         //T is time, avoid duplicate variable
         //Convert to date first to compare
         const planT = new Date(planTime)
-        const startT = new Date(startTime)
-        const endT = new Date(endTime)
+        const startT = new Date(startDate)
+        const endT = new Date(endDate)
 
 
         // check start, end vs plan time first
