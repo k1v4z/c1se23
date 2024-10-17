@@ -28,4 +28,10 @@ repositoryContainer.register(repositoryNames.KIND_REPOSITORY, () => {
     return new KindRepository()
 })
 
+//Province Repo
+const ProvinceRepository = require("../../repository/ProvinceRepository");
+repositoryContainer.register(repositoryNames.PROVINCE_REPOSITORY, () => {
+    return new ProvinceRepository()
+})
+
 module.exports = repositoryContainer

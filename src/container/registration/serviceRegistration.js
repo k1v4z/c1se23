@@ -48,13 +48,21 @@ serviceContainer.register(serviceNames.KIND_SERVICE, () => {
     return new KindService(kindRepository) //Inject kind repository
 })
 
+//Province service
+const ProvinceService = require("../../service/ProvinceService");
+serviceContainer.register(serviceNames.PROVINCE_SERVICE, (container) => {
+    const provinceRepository = repositoryContainer.get(repositoryNames.PROVINCE_REPOSITORY);
+    return new ProvinceService(provinceRepository)
+})
+
 //Plan Service
 const PlanService = require("../../service/PlanService");
 serviceContainer.register(serviceNames.PLAN_SERVICE, (container) => {
     const planRepository = repositoryContainer.get(repositoryNames.PLAN_REPOSITORY)
     const kindService = serviceContainer.get(serviceNames.KIND_SERVICE)
+    const provinceService = serviceContainer.get(serviceNames.PROVINCE_SERVICE)
     const datePlanService = container.get(serviceNames.DATE_PLAN_SERVICE)
-    return new PlanService(planRepository, kindService, datePlanService) //inject plan repo and kind service
+    return new PlanService(planRepository, kindService, datePlanService, provinceService) //inject plan repo and kind service
 })
 
 //Plan service
@@ -62,5 +70,6 @@ const ImageService = require("../../service/ImageService");
 serviceContainer.register(serviceNames.IMAGE_SERVICE, (container) => {
     return new ImageService()
 })
+
 
 module.exports = serviceContainer
