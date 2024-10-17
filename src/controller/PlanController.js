@@ -31,8 +31,8 @@ module.exports = new class PlanController {
     }
 
     getPlan = async (req, res) => {
-        const userId = req.body.user_id
-        const plans = await this.planService.getPlan(userId)
+        const planId = req.params.planId
+        const plans = await this.planService.getPlan(planId)
 
         if (plans.statusCode == planCodes.get.success) {
             return res.status(200).json(plans)
@@ -60,16 +60,16 @@ module.exports = new class PlanController {
         }
     }
 
-    editPlan = async(req, res) => {
+    editPlan = async (req, res) => {
         const planId = req.params.id
         const planData = req.body
-        
-        try{
+
+        try {
             await this.planService.editPlan(planId, planData)
             return res.status(200).json({
                 message: "update successful "
             })
-        }catch(err){
+        } catch (err) {
             console.log(err);
             return res.status(500).json({
                 message: "Error when update plan, try again later"
