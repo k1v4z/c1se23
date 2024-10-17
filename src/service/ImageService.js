@@ -6,14 +6,14 @@ module.exports = class ImageService {
 
     }
 
-    uploadStream = (buffer) => {
+    uploadStream = (buffer, folderName) => {
         return new Promise((resolve, reject) => {
             const stream = cloudinary.uploader.upload_stream({
-                folder: "plans"
-            },(err, result) => {
-                if(result){
+                folder: folderName
+            }, (err, result) => {
+                if (result) {
                     resolve(result)
-                }else{
+                } else {
                     reject(err)
                 }
             })
@@ -27,9 +27,9 @@ module.exports = class ImageService {
 
     }
 
-    async uploadImage(files) {
+    async uploadImage(files, folderName) {
         const uploadResults = await Promise.all(files.map(async (file) => {
-            const result = await this.uploadStream(file.buffer)
+            const result = await this.uploadStream(file.buffer, folderName)
             return {
                 originalname: file.originalname,
                 url: result.secure_url //url of file in cloudinary
