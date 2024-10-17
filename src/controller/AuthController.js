@@ -2,6 +2,7 @@ const resultCodes = require("../constants/http_response/resultCode");
 const appContainer = require("../container/registration/containerRegistration");
 const containerNames = require("../constants/container_name/containerNames");
 const serviceNames = require("../constants/service_name/serviceNames");
+const path = require("path");
 
 
 module.exports = new class AuthController {
@@ -42,12 +43,13 @@ module.exports = new class AuthController {
     logout = async (req, res) => {
         const accessToken = req.signedCookies.accessToken
         const logout = this.authService.logout(accessToken)
-
+        
         if (logout.code == resultCodes.logout.success) {
-            res.clearCookie('accessToken', {
-                httpOnly: true,
-                sameSite: 'None'
-            })
+            res.cookie('accessToken', '', {
+                expires: new Date(0),  // Set to a past date to expire the cookie immediately
+                httpOnly: true,       // Include if the original cookie was httpOnly
+                path: '/'             // Ensure the path matches the original cookie
+            });
         }
 
         return res.status(200).json(logout)
