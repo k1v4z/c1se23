@@ -7,5 +7,6 @@ module.exports = {
     KIND_SERVICE: 'kindService',
     DATE_PLAN_SERVICE: 'datePlanService',
     IMAGE_SERVICE: 'imageService',
-    PROVINCE_SERVICE: 'provinceService'
+    PROVINCE_SERVICE: 'provinceService',
+    ACTIVITY_LOCATION_SERVICE: 'activityLocationService'
 }
