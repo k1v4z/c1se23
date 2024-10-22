@@ -138,16 +138,18 @@ model activities {
 }
 
 model activity_locations {
-  id               String            @id @default(uuid())
-  name             String
-  address          String
-  open_at          String
-  close_at         String
-  longitude        Decimal
-  latitude         Decimal
-  imageUrl         String
-  activities       activities[]
-  locationOnTypes  locationOnTypes[]
+  id              String            @id @default(uuid())
+  name            String
+  address         String
+  open_at         String
+  close_at        String
+  longitude       Decimal
+  latitude        Decimal
+  imageUrl        String
+  activities      activities[]
+  locationOnTypes locationOnTypes[]
+
+  @@unique([name, address])
 }
 
 model locationOnTypes {
@@ -161,7 +163,7 @@ model locationOnTypes {
 
 model types {
   id              String            @id @default(uuid())
-  name            String
+  name            String            @unique
   locationOnTypes locationOnTypes[]
 }
 
