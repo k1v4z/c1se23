@@ -1,4 +1,3 @@
-
 //Load route
 const loadRoute = (app) => {
     console.log("Loading Express Route ...");
@@ -14,6 +13,9 @@ const loadRoute = (app) => {
     //Loading Image Route
     const ImageRoute = require("../route/ImageRoute");
     ImageRoute.useRoutes('/api/v1', app)
+
+    const ActivityLocationRoute = require("../route/ActivityLocationRoute");
+    ActivityLocationRoute.useRoutes('/api/v1', app)
 }
 
 module.exports = loadRoute
