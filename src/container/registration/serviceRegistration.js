@@ -71,5 +71,11 @@ serviceContainer.register(serviceNames.IMAGE_SERVICE, (container) => {
     return new ImageService()
 })
 
+//Activity Location Service
+const ActivityLocationService = require("../../service/ActivityLocationService");
+serviceContainer.register(serviceNames.ACTIVITY_LOCATION_SERVICE, (container) => {
+    const activityLocationRepository = repositoryContainer.get(repositoryNames.ACTIVITY_LOCATION_REPOSITORY)
+    return new ActivityLocationService(activityLocationRepository)
+})
 
 module.exports = serviceContainer

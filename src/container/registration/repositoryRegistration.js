@@ -34,4 +34,9 @@ repositoryContainer.register(repositoryNames.PROVINCE_REPOSITORY, () => {
     return new ProvinceRepository()
 })
 
+//Activity Location repo
+const ActivityLocationRepository = require("../../repository/ActivityLocationRepository");
+repositoryContainer.register(repositoryNames.ACTIVITY_LOCATION_REPOSITORY, () => {
+    return new ActivityLocationRepository()
+})
 module.exports = repositoryContainer
