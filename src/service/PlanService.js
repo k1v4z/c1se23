@@ -1,5 +1,7 @@
 const planCodes = require("../constants/http_response/planCode")
+const InvalidError = require("../errors/InvalidError")
 const MainPlanSchema = require("../schemas/MainPlanSchema")
+const PaginationSchema = require("../schemas/PaginationSchema")
 
 module.exports = class PlanService {
     constructor(planRepository, kindService, datePlanService, provinceService) {
@@ -70,7 +72,7 @@ module.exports = class PlanService {
     async getPlan(planId, userId) {
         try {
             const plans = await this.planRepository.getPlan(planId, userId)
-            
+
             return {
                 statusCode: planCodes.get.success,
                 plans
@@ -81,6 +83,19 @@ module.exports = class PlanService {
                 statusCode: planCodes.get.error
             }
         }
+    }
+
+    async getAllPlans(userId, page, limit) {
+        page = Number(page)
+        limit = Number(limit)
+        const validation = PaginationSchema.validatePagination({ page, limit })
+        if (!validation.success) {
+            throw new InvalidError("Page and limit must be a number", validation.error.errors)
+        }
+
+        const plans = await this.planRepository.getAllPlans(userId, page, limit)
+
+        return plans
     }
 
     async deletePlan(planId) {

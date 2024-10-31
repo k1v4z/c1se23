@@ -7,4 +7,5 @@ module.exports = class ProvinceService {
         const provinceId = await this.provinceRepository.getProvinceIdByName(provinceName)
         return provinceId
     }
+    
 }

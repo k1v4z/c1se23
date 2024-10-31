@@ -2,6 +2,7 @@ const containerNames = require("../constants/container_name/containerNames")
 const planCodes = require("../constants/http_response/planCode")
 const serviceNames = require("../constants/service_name/serviceNames")
 const appContainer = require("../container/registration/containerRegistration")
+const InvalidError = require("../errors/InvalidError")
 
 module.exports = new class PlanController {
     constructor() {
@@ -31,6 +32,7 @@ module.exports = new class PlanController {
     }
 
     getPlan = async (req, res) => {
+        //This service get plan include all activities
         const planId = req.params.id
         const userId = req.userId //get UserId from auth middleware
         
@@ -43,6 +45,35 @@ module.exports = new class PlanController {
                 message: "Error when processing, try again later"
             })
         }
+    }
+
+    getAllPlans = async (req, res) => {
+        const userId = req.userId
+        const {page, limit} = req.query
+
+        try{
+            const plans = await this.planService.getAllPlans(userId, page, limit)
+            return res.status(200).json({
+                code: planCodes.get.success,
+                plans
+            })
+        }catch(err){
+            if(err instanceof InvalidError){
+                return res.status(400).json({
+                    code: planCodes.get.fail,
+                    message: err.message,
+                    cause: err.cause
+                })
+            }
+
+            console.log(err);
+            
+            return res.status(500).json({
+                code: planCodes.get.error,
+                message: "Error when processing, try again later"
+            })
+        }
+
     }
 
     deletePlan = async (req, res) => {

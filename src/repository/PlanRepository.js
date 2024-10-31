@@ -130,6 +130,50 @@ module.exports = class PlanRepository {
         return plans
     }
 
+    async getAllPlans(userId, page, limit){
+        const totalPlans = await prisma.plans.count({
+            where: {
+                user_id: userId
+            }
+        })
+
+        const totalPages = Math.ceil(totalPlans / limit)
+
+        const plans = await prisma.plans.findMany({
+            skip: (Number(page) - 1) * Number(limit),
+            take: Number(limit),
+            where: {
+                user_id: userId
+            },
+            select: {
+                id: true,
+                title: true,
+                date: true,
+                transportation: true,
+                kind: {
+                    select: {
+                        name: true
+                    }
+                },
+                plan_on_province: {
+                    select: {
+                        province: {
+                            select: {
+                                name: true,
+                                imageUrl: true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+        return {
+            plans: plans,
+            totalPages: totalPages
+        }
+    }
+
     async getPlanById(planId) {
         const plan = await prisma.plans.findMany({
             select: {

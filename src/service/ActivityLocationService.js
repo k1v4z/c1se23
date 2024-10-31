@@ -53,6 +53,19 @@ module.exports = class ActivityLocationService {
         return locations
     }
 
+    async getActivityLocationsByProvince(provinceName) {
+        try {
+            const locations = await this.activityLocationRepository.getActivityLocationsByProvince(provinceName);
+            if(!locations){
+                throw new NotFoundError("Location not found")
+            }
+            return locations;
+        } catch (err) {
+            console.log(err);
+            throw new Error("Server Error");
+        }
+    }
+
     async getActivityLocationByName(name, address) {
         try {
             const acLocation = await this.activityLocationRepository.getActivityLocationByName(name, address)

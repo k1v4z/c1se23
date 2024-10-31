@@ -120,4 +120,27 @@ module.exports = new class ActivityLocationController {
             })
         }
     }
+
+    getActivityLocationsByProvince = async (req, res) => {
+        const { province } = req.query;
+        try {
+            const locations = await this.activityLocationService.getActivityLocationsByProvince(province);
+            return res.status(200).json({
+                code: acLocationCodes.get.success,
+                locations
+            });
+        } catch (err) {
+            if(err instanceof NotFoundError){
+                return res.status(404).json({
+                    code: acLocationCodes.get.fail,
+                    message: err.message
+                });
+            }
+            console.log(err);
+            return res.status(500).json({
+                code: acLocationCodes.get.error,
+                message: "Error when processing, try again later"
+            });
+        }
+    }
 }
