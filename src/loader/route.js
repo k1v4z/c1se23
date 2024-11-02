@@ -14,8 +14,13 @@ const loadRoute = (app) => {
     const ImageRoute = require("../route/ImageRoute");
     ImageRoute.useRoutes('/api/v1', app)
 
+    //Loading Activity Location Route
     const ActivityLocationRoute = require("../route/ActivityLocationRoute");
     ActivityLocationRoute.useRoutes('/api/v1', app)
+
+    //Loading Province Route
+    const ProvinceRoute = require("../route/ProvinceRoute");
+    ProvinceRoute.useRoutes('/api/v1', app)
 }
 
 module.exports = loadRoute
