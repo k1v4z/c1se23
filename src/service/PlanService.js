@@ -52,18 +52,13 @@ module.exports = class PlanService {
 
     }
 
-    async editPlan(planId, planData) {
+    async editPlan(planData) {
         try {
-            const { plan } = planData
-            const kindName = plan.kind_name
-            const provinceName = plan.province_name
-
+            const kindName = planData.kind_name
             const [results] = await this.kindService.getKindIdByName(kindName)
-            const [provinceResult] = await this.provinceService.getProvinceIdByName(provinceName)
-
-            //If user change province or date, clear all activitys regarding this plan
-            plan.kindId = results.id
-            await this.planRepository.editPlan(planId, plan)
+            planData.kindId = results.id
+            const editedPlan = await this.planRepository.editPlan(planData)
+            return editedPlan
         } catch (err) {
             console.log(err);
         }
