@@ -38,63 +38,22 @@ module.exports = class PlanRepository {
         return newPlan;
     }
 
-    async editPlan(planId, planData) {
-        const p = await prisma.plans.update({
-            where: {
-                id: planId,
-            },
+    async editPlan(planData) {
+        const editedPlan = await prisma.plans.update({
             data: {
                 title: planData.title,
                 date: planData.date,
                 isChildren: planData.have_children,
-                kind: {
-                    connect: {
-                        id: planData.kindId,
-                        name: planData.kind_name
-                    },
-                },
-                location: planData.location,
-                money: planData.money,
+                kind: planData.kind_id,
                 transportation: planData.transportation,
-                activities: {
-                    update: planData.activities.map((activity) => ({
-                        where: {
-                            id: activity.id // Giả sử mỗi activity có id để xác định bản ghi
-                        },
-                        data: {
-                            name: activity.name,
-                            start_time: activity.start_time,
-                            end_time: activity.end_time,
-                            longitude: activity.longitude,
-                            latitude: activity.latitude,
-                            activity_thumbs: {
-                                update: {
-                                    where: {
-                                        activity_id: activity.id, // ID của activity_thumbs mà bạn muốn cập nhật
-                                    },
-                                    data: {
-                                        image_url: activity.image_url, // Cập nhật image_url
-                                    },
-                                },
-                            },
-                        },
-                    })),
-                },
-                plan_images: {
-                    update: {
-                        where: {
-                            plan_id: planId, // Điều kiện xác định bản ghi hình ảnh bạn muốn cập nhật
-                        },
-                        data: {
-                            image_url: planData.image_url,
-                        },
-                    },
-                },
             },
-        });
+            where: {
+                id: planData.id,
+                user_id: planData.user_id
+            }
+        })
 
-        console.log(p);
-
+        return editedPlan
     }
 
     async getPlan(planId, userId) {       

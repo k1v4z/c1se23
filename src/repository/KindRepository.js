@@ -7,7 +7,7 @@ module.exports = class KindRepository {
                 name: kindName
             }
         })
-
+        
         return kindId
     }
 }

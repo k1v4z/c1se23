@@ -94,13 +94,17 @@ module.exports = new class PlanController {
     }
 
     editPlan = async (req, res) => {
+        const {planEditData} = req.body
         const planId = req.params.id
-        const planData = req.body
+        console.log(planEditData);
+        planEditData.id = planId
+        
+        planEditData.user_id = req.userId
 
         try {
-            await this.planService.editPlan(planId, planData)
+            await this.planService.editPlan(planEditData)
             return res.status(200).json({
-                message: "update successful "
+                message: "Update successful "
             })
         } catch (err) {
             console.log(err);
