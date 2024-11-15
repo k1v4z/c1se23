@@ -56,7 +56,7 @@ module.exports = class PlanRepository {
         return editedPlan
     }
 
-    async getPlan(planId, userId) {       
+    async getPlan(planId, userId) {
         const plans = await prisma.plans.findMany({
             where: {
                 id: planId,
@@ -85,11 +85,11 @@ module.exports = class PlanRepository {
                 }
             },
         })
-        
+
         return plans
     }
 
-    async getAllPlans(userId, page, limit){
+    async getAllPlans(userId, page, limit) {
         const totalPlans = await prisma.plans.count({
             where: {
                 user_id: userId
@@ -193,5 +193,69 @@ module.exports = class PlanRepository {
 
         await prisma.$transaction([deleteNotifications, deleteActivities, deletePlanOnProvince, deletePlan])
 
+    }
+
+    async addActivityLocationsToPlan(planId, activityLocationIds) {
+        const updatedPlan = await prisma.plans.update({
+            where: { id: planId },
+            data: {
+                activities: {
+                    create: activityLocationIds.map(location => ({
+                        start_date: location.start_date,
+                        end_date: location.end_date,
+                        activity_location: {
+                            connect: { id: location.id }
+                        }
+                    }))
+                }
+            },
+            include: {
+                activities: true
+            }
+        });
+
+        return updatedPlan;
+    }
+
+    async checkActivityLocationsExist(planId, activityLocationIds) {
+        const existingActivities = await prisma.activities.findMany({
+            where: {
+                plan_id: planId,
+                activity_location_id: {
+                    in: activityLocationIds
+                }
+            }
+        });
+
+        return existingActivities.length > 0;
+    }
+
+    async removeActivityFromPlan(planId, activityId) {
+        const updatedPlan = await prisma.plans.update({
+            where: { id: planId },
+            data: {
+                activities: {
+                    delete: {
+                        id: activityId
+                    }
+                }
+            },
+            include: {
+                activities: true
+            }
+        });
+
+        return updatedPlan;
+    }
+
+    async checkActivityExistInPlan(planId, activityId) {
+        const existingActivity = await prisma.activities.findFirst({
+            where: {
+                id: activityId,
+                plan_id: planId,
+            }
+        });
+
+        return existingActivity !== null;
     }
 }

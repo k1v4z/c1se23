@@ -21,6 +21,9 @@ const loadRoute = (app) => {
     //Loading Province Route
     const ProvinceRoute = require("../route/ProvinceRoute");
     ProvinceRoute.useRoutes('/api/v1', app)
+
+    const NotificationRoute = require("../route/NotificationRoute");
+    NotificationRoute.useRoutes('/api/v1', app)
 }
 
 module.exports = loadRoute

@@ -15,5 +15,7 @@ module.exports = new class PlanRoute extends BaseRoute {
         this.router.put('/edit-plan/:id', AuthMiddleware.authenticateUser, PlanController.editPlan)
         this.router.get('/plans', AuthMiddleware.authenticateUser, PlanController.getAllPlans)
         this.router.get('/activity-location-by-province', ActivityLocationController.getActivityLocationsByProvince)
+        this.router.put('/plan/:id/add-activity-locations', AuthMiddleware.authenticateUser, PlanController.addActivityLocationsToPlan);
+        this.router.delete('/plan/:id/remove-activity', AuthMiddleware.authenticateUser, PlanController.removeActivityFromPlan);
     }
 }

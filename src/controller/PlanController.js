@@ -3,6 +3,7 @@ const planCodes = require("../constants/http_response/planCode")
 const serviceNames = require("../constants/service_name/serviceNames")
 const appContainer = require("../container/registration/containerRegistration")
 const InvalidError = require("../errors/InvalidError")
+const NotFoundError = require("../errors/NotFoundError")
 
 module.exports = new class PlanController {
     constructor() {
@@ -35,7 +36,7 @@ module.exports = new class PlanController {
         //This service get plan include all activities
         const planId = req.params.id
         const userId = req.userId //get UserId from auth middleware
-        
+
         const plans = await this.planService.getPlan(planId, userId)
 
         if (plans.statusCode == planCodes.get.success) {
@@ -49,16 +50,16 @@ module.exports = new class PlanController {
 
     getAllPlans = async (req, res) => {
         const userId = req.userId
-        const {page, limit} = req.query
+        const { page, limit } = req.query
 
-        try{
+        try {
             const plans = await this.planService.getAllPlans(userId, page, limit)
             return res.status(200).json({
                 code: planCodes.get.success,
                 plans
             })
-        }catch(err){
-            if(err instanceof InvalidError){
+        } catch (err) {
+            if (err instanceof InvalidError) {
                 return res.status(400).json({
                     code: planCodes.get.fail,
                     message: err.message,
@@ -67,7 +68,7 @@ module.exports = new class PlanController {
             }
 
             console.log(err);
-            
+
             return res.status(500).json({
                 code: planCodes.get.error,
                 message: "Error when processing, try again later"
@@ -94,11 +95,11 @@ module.exports = new class PlanController {
     }
 
     editPlan = async (req, res) => {
-        const {planEditData} = req.body
+        const { planEditData } = req.body
         const planId = req.params.id
         console.log(planEditData);
         planEditData.id = planId
-        
+
         planEditData.user_id = req.userId
 
         try {
@@ -111,6 +112,52 @@ module.exports = new class PlanController {
             return res.status(500).json({
                 message: "Error when update plan, try again later"
             })
+        }
+    }
+
+    addActivityLocationsToPlan = async (req, res) => {
+        const planId = req.params.id;
+        const activityLocations = req.body.activityLocations;
+
+        const result = await this.planService.addActivityLocationsToPlan(planId, activityLocations);
+
+        if (result.statusCode === planCodes.update.success) {
+            return res.status(200).json({
+                message: "Activity locations added successfully",
+                updatedPlan: result.updatedPlan
+            });
+        } else {
+            return res.status(500).json({
+                message: result.message
+            });
+        }
+    }
+
+    removeActivityFromPlan = async (req, res) => {
+        try{
+            const planId = req.params.id;
+            const activityId = req.body.activityId;
+
+            const result = await this.planService.removeActivityFromPlan(planId, activityId);
+            
+            return res.status(200).json({
+                code: planCodes.update.success,
+                message: "Activity removed successfully",
+                updatedPlan: result.updatedPlan
+            });
+
+        }catch(err){
+            if(err instanceof NotFoundError){
+                return res.status(404).json({
+                    code: planCodes.update.fail,
+                    message: err.message
+                });
+            }
+
+            return res.status(500).json({
+                code: planCodes.update.error,
+                message: "Error when removing activity from plan"
+            });
         }
     }
 }

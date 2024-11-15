@@ -1,5 +1,6 @@
 const planCodes = require("../constants/http_response/planCode")
 const InvalidError = require("../errors/InvalidError")
+const NotFoundError = require("../errors/NotFoundError")
 const MainPlanSchema = require("../schemas/MainPlanSchema")
 const PaginationSchema = require("../schemas/PaginationSchema")
 
@@ -117,4 +118,40 @@ module.exports = class PlanService {
         }
     }
 
+    async addActivityLocationsToPlan(planId, activityLocations) {
+        try {
+            const locationIds = activityLocations.map(location => location.id);
+            const exist = await this.planRepository.checkActivityLocationsExist(planId, locationIds);
+            
+            if (exist) {
+                return {
+                    statusCode: planCodes.update.invalid,
+                    message: "Some activity locations already exist in the plan"
+                };
+            }
+
+            const updatedPlan = await this.planRepository.addActivityLocationsToPlan(planId, activityLocations);
+            return {
+                statusCode: planCodes.update.success,
+                updatedPlan
+            };
+        } catch (err) {
+            console.log(err);
+            return {
+                statusCode: planCodes.update.error,
+                message: "Error when adding activity locations to plan"
+            };
+        }
+    }
+
+    async removeActivityFromPlan(planId, activityId) {
+        // Kiểm tra xem activity có tồn tại trong plan hay không
+        const exist = await this.planRepository.checkActivityExistInPlan(planId, activityId);
+        if (!exist) 
+            throw new NotFoundError("Activity does not exist in the plan");
+
+        // Xóa activity khỏi plan
+        const updatedPlan = await this.planRepository.removeActivityFromPlan(planId, activityId);
+        return updatedPlan;
+    }
 }

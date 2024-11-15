@@ -78,4 +78,25 @@ serviceContainer.register(serviceNames.ACTIVITY_LOCATION_SERVICE, (container) =>
     return new ActivityLocationService(activityLocationRepository)
 })
 
+const WeatherService = require("../../service/WeatherService");
+serviceContainer.register(serviceNames.WEATHER_SERVICE, () => {
+    return new WeatherService()
+})
+
+const GeminiService = require("../../service/GeminiService");
+serviceContainer.register(serviceNames.GEMINI_SERVICE, () => {
+    const weatherService = serviceContainer.get(serviceNames.WEATHER_SERVICE)
+    return new GeminiService(weatherService)
+})
+
+const SlackService = require("../../service/SlackService");
+serviceContainer.register(serviceNames.SLACK_SERVICE, () => {
+    const geminiService = serviceContainer.get(serviceNames.GEMINI_SERVICE)
+    return new SlackService(geminiService)
+})
+
+
+
+
+
 module.exports = serviceContainer

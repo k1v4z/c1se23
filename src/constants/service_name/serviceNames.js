@@ -8,5 +8,8 @@ module.exports = {
     DATE_PLAN_SERVICE: 'datePlanService',
     IMAGE_SERVICE: 'imageService',
     PROVINCE_SERVICE: 'provinceService',
-    ACTIVITY_LOCATION_SERVICE: 'activityLocationService'
+    ACTIVITY_LOCATION_SERVICE: 'activityLocationService',
+    SLACK_SERVICE: 'slackService',
+    GEMINI_SERVICE: 'geminiService',
+    WEATHER_SERVICE: 'weatherService',
 }
