@@ -1,5 +1,8 @@
 const { default: axios } = require("axios");
+const { WebClient } = require('@slack/web-api');
+
 require("dotenv").config({ path: "../../.env" });
+const client =  new WebClient(process.env.SLACK_BOT_TOKEN);
 
 module.exports = class SlackService {
     constructor(geminiService) {
@@ -23,7 +26,7 @@ module.exports = class SlackService {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": `*Hey <@${messageBody.channel}>! Here's your weather update for your upcoming plan.*\n\n*🗓️ Date:* 2024-11-13\n*📍 Location:* ${province}\n\n*Weather Forecast:* ${message.weather_forecast}`
+                    "text": `*Hey <@${messageBody.channel}>! Here's your weather update for your upcoming plan.*\n\n*🗓️ Date:* 2024-11-13\n*📍 Location:* ${province}\n\n*🌦️Weather Forecast:* ${message.weather_forecast}`
                 }
             },
             {
@@ -53,25 +56,16 @@ module.exports = class SlackService {
         ]
 
         // Gửi tin nhắn qua Slack API
-        const response = await axios.post(
-            "https://slack.com/api/chat.postMessage",
-            {
-                channel: messageBody.channel, // ID kênh hoặc người dùng
-                blocks: block, // Nội dung tin nhắn
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${process.env.SLACK_BOT_TOKEN}`,
-                    "Content-Type": "application/json",
-                },
-            }
-        );
-
-        // Kiểm tra phản hồi từ API Slack
-        if (!response.data.ok) {
-            throw new Error(`Failed to send message: ${response.data.error}`);
+        try {
+            await client.chat.postMessage({
+                channel: messageBody.channel,
+                blocks: block
+            });
+   
+            return true;
+        } catch (error) {
+            console.error('Error sending message to Slack:', error);
+            return false;
         }
-
-        return response.data
     }
 };

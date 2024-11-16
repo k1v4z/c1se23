@@ -139,12 +139,25 @@ module.exports = class ActivityLocationRepository {
     const totalLocations = await prisma.activity_locations.count({
       where: whereClause,
     });
+
     const totalPages = Math.ceil(totalLocations / limit);
 
     const locations = await prisma.activity_locations.findMany({
       skip: (Number(page) - 1) * Number(limit),
       take: Number(limit),
+      include: {
+        locationOnTypes: {
+          include: {
+            type: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
       where: whereClause,
+
     });
 
     return {
