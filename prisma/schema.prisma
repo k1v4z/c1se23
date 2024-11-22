@@ -19,17 +19,28 @@ enum Channel {
 }
 
 model users {
-  id        String     @id @default(uuid())
-  username  String     @unique
-  password  String
-  name      String?
-  address   String?
-  role_id   String?    @unique
-  role      roles?     @relation(fields: [role_id], references: [id])
-  create_at DateTime   @default(now())
-  comments  comments[]
-  posts     posts[]
-  plans     plans[]
+  id           String       @id @default(uuid())
+  username     String       @unique
+  password     String
+  name         String?
+  address      String?
+  channelId    String?
+  role_id      String?      @unique
+  role         roles?       @relation(fields: [role_id], references: [id])
+  create_at    DateTime     @default(now())
+  comments     comments[]
+  posts        posts[]
+  plans        plans[]
+  slackTokenId String?      @unique
+  slackToken   slackTokens?
+}
+
+model slackTokens {
+  id          String   @id @default(uuid())
+  accessToken String
+  user_id     String
+  user        users    @relation(fields: [id], references: [slackTokenId])
+  createdAt   DateTime @default(now())
 }
 
 model roles {
@@ -61,6 +72,7 @@ model comments {
   comment_date DateTime @default(now())
   content      String
   post_id      String
+  channel_id   String
   post         posts    @relation(fields: [post_id], references: [id])
 }
 
@@ -119,7 +131,6 @@ model notifications {
   title       String
   activity_id String     @unique
   activity    activities @relation(fields: [activity_id], references: [id])
-  channel     Channel
   sent_at     DateTime
   state       String
   message     String
@@ -140,12 +151,14 @@ model activities {
 model activity_locations {
   id              String            @id @default(uuid())
   name            String
-  address         String
+  address         String            @unique
   open_at         String
   close_at        String
   longitude       Decimal
   latitude        Decimal
   imageUrl        String
+  transportation  String?
+  money           String?
   activities      activities[]
   locationOnTypes locationOnTypes[]
 

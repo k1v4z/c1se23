@@ -48,6 +48,8 @@ module.exports = class ActivityLocationRepository {
         longitude: data.longitude,
         latitude: data.latitude,
         imageUrl: data.imageUrl,
+        money: data.money,
+        transportation: data.transportation,
         locationOnTypes: {
           create: {
             type: {

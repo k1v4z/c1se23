@@ -24,6 +24,9 @@ const loadRoute = (app) => {
 
     const NotificationRoute = require("../route/NotificationRoute");
     NotificationRoute.useRoutes('/api/v1', app)
+
+    const GeminiRoute = require("../route/GeminiRoute");
+    GeminiRoute.useRoutes('/api/v1', app)
 }
 
 module.exports = loadRoute

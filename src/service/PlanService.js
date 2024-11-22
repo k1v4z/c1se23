@@ -154,4 +154,5 @@ module.exports = class PlanService {
         const updatedPlan = await this.planRepository.removeActivityFromPlan(planId, activityId);
         return updatedPlan;
     }
+    
 }
