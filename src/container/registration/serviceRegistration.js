@@ -86,7 +86,8 @@ serviceContainer.register(serviceNames.WEATHER_SERVICE, () => {
 const GeminiService = require("../../service/GeminiService");
 serviceContainer.register(serviceNames.GEMINI_SERVICE, () => {
     const weatherService = serviceContainer.get(serviceNames.WEATHER_SERVICE)
-    return new GeminiService(weatherService)
+    const activityLocationService = serviceContainer.get(serviceNames.ACTIVITY_LOCATION_SERVICE)
+    return new GeminiService(weatherService, activityLocationService)
 })
 
 const SlackService = require("../../service/SlackService");

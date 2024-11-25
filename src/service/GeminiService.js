@@ -1,9 +1,15 @@
 const axios = require("axios");
 const model = require("../config/gemini");
+const fs = require('fs')
+const path = require('path');
+const ExistedError = require("../errors/ExistedError");
+
+const locationTypeData = JSON.parse(fs.readFileSync(path.join(__dirname, 'locationType.json'), 'utf8'));
 
 module.exports = class GeminiService {
-  constructor(weatherService) {
+  constructor(weatherService, activityLocationService) {
     this.weatherService = weatherService;
+    this.activityLocationService = activityLocationService;
   }
 
   //Get recommendation based on real time weather forecast
@@ -41,17 +47,18 @@ module.exports = class GeminiService {
   async getSuggestLocation(data) {
     //weather forecast data json
     //{predict: lightrain, temp, wind, humidity}
-    const { planDate, province, weatherForecast } = data;
+    const { planDate, province } = data;
     //Call api thoi tiet
     const weatherData = await this.weatherService.getClimateForecast(province, planDate);
-    
+
     const prompt = `
       Role: Generator
-      Context: Location: ${province}, weather forecast: ${weatherData}, plan date: ${planDate}
-      Task: Generate list suggestion based on location and weather forecast
+      Context: Location: ${province}, weather forecast: ${weatherData.weatherCondition}, ${weatherData.temperature},${weatherData.windSpeed}, ${weatherData.humidity}, plan date: ${planDate}
+      Task: Generate list suggestion to protect health of tourist  based on location and weather forecast in context given above. Example: Storm should recommend user in door. Heavy rain recommend user location in door like Restaurant. vincom, ... etc.
       Output format: {
+      "id": ""
       "name": Name of location and unaccented letters ,
-      "address": address of location and unaccented letters and follo this format: house number + address street, district name, province name
+      "address": address of location and unaccented letters and folloư this format: house number + address street name, district name, province name
       "open_at": open time format (HH:MM),
       "close_at": close time format(HH:MM)",
       "longitude": number,
@@ -64,6 +71,7 @@ module.exports = class GeminiService {
       "locationType": Must be same as one of theses ['Accomodation','Food','Museum', 'Visit']
       }
       Example output json: [{
+      "id": ""
       "name": "Com Hen Hanh",
       "address": "11 Truong Chinh, Thanh Khe, Da Nang",
       "open_at": "06:30",
@@ -77,6 +85,7 @@ module.exports = class GeminiService {
       "end_date":  2024-11-22T17:00:00.000Z
       "locationType": "Food"
       }, {
+      "id": ""
       "name": "Com Hen Hanh",
       "address": "11 Truong Chinh, Thanh Khe, Da Nang",
       "open_at": "06:30",
@@ -90,15 +99,74 @@ module.exports = class GeminiService {
       "end_date":  2024-11-22T17:00:00.000Z
       "locationType": "Food"
       }]
-      Note: all fields in json required and list at least 15 items and latitude, longitude must be correct absolutely with address name`;
-    
+      Note: all fields in json required and list at least 15 items and latitude, longitude must be correct absolutely with address name
+      all fields in json required and list at least 15 items and latitude, longitude must be correct absolutely with address name. 
+      If weather forecast is storm or thunder, json format is a list item have one element  and response it json.
+      [{
+      "id": ""
+      "name": "Indoor Activities",
+      "address": "Your Hotel/Home Room",
+      "open_at": "00:00",
+      "close_at": "23:59",
+      "longitude": 108.178457,
+      "latitude": 16.033881,
+      "imageUrl": "https://image.pollinations.ai/prompt/indoor-activities",
+      "transportation": "None",
+      "money": "0 VND",
+      "start_date": "2024-11-20T17:00:00.000Z",
+      "end_date": "2024-11-21T17:00:00.000Z",
+      "locationType": "Accomodation"
+      }]`;
+
 
     const results = await model.generateContent(prompt);
 
     const convertedResults = results.response
       .text()
-      .replace(/```json\n/, "") 
+      .replace(/```json\n/, "")
       .replace(/\n```/, "");
-    return JSON.parse(convertedResults);
+
+    const suggestLocation = JSON.parse(convertedResults);
+    
+
+    for (const location of suggestLocation) {
+      const locationType = location.locationType;
+      if (locationTypeData.LocationType[locationType]) {
+        const images = locationTypeData.LocationType[locationType];
+        const randomImage = images[Math.floor(Math.random() * images.length)];
+        location.imageUrl = randomImage;
+      }
+
+      try {
+        const result = await this.activityLocationService.createActivityLocation(location);
+        location.id = result.id;
+      } catch (err) {
+        if (err instanceof ExistedError) {
+          const existingLocation = await this.activityLocationService.getActivityLocationByName(location.name, location.address);
+          
+          if(!existingLocation.id){
+            const result = await this.activityLocationService.createActivityLocation(location);
+            location.id = result.id;
+          }else{
+            location.id = existingLocation.id
+          }
+          continue;
+        }
+      }
+    }
+
+
+    return {
+      suggestLocation,
+      weather: {
+        temperature: weatherData.temperature,
+        windSpeed: weatherData.windSpeed,
+        humidity: weatherData.humidity,
+        weatherCondition: weatherData.weatherCondition,
+        deg: weatherData.deg,
+        pressure: weatherData.pressure,
+        icon: weatherData.icon
+      }
+    }
   }
 };

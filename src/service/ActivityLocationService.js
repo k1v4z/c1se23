@@ -25,8 +25,12 @@ module.exports = class ActivityLocationService {
             throw new ExistedError("Location Existed")
         }
 
-        const newLocation = await this.activityLocationRepository.createActivityLocation(data)
-        return newLocation
+        try{
+            const newLocation = await this.activityLocationRepository.createActivityLocation(data)
+            return newLocation
+        }catch(err){
+            throw new ExistedError("Location Existed")
+        }
     }
 
     async editActivityLocation(id,data) {

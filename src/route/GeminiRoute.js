@@ -7,7 +7,7 @@ module.exports = new class GeminiRoute extends BaseRoute {
     }
 
     initRoutes() {
-        this.router.get('/suggest-location', GeminiController.getSuggestLocation)
+        this.router.post('/suggest-location', GeminiController.getSuggestLocation)
     }
 
 }   

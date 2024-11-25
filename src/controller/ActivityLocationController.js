@@ -64,7 +64,7 @@ module.exports = new class ActivityLocationController {
             }
 
             console.log(err);
-            
+
             return res.status(500).json({
                 message: "error when edit"
             })
@@ -130,7 +130,7 @@ module.exports = new class ActivityLocationController {
                 locations
             });
         } catch (err) {
-            if(err instanceof NotFoundError){
+            if (err instanceof NotFoundError) {
                 return res.status(404).json({
                     code: acLocationCodes.get.fail,
                     message: err.message
@@ -142,5 +142,11 @@ module.exports = new class ActivityLocationController {
                 message: "Error when processing, try again later"
             });
         }
+    }
+
+    getActivityLocationByAddress = async (req, res) => {
+        const { name, address } = req.query
+        const location = await this.activityLocationService.getActivityLocationByName(name, address)
+        return res.status(200).json(location)
     }
 }

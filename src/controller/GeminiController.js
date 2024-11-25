@@ -12,8 +12,9 @@ module.exports = new class GemininiController {
     getSuggestLocation = async(req, res) => {
         try{
             const body = req.body
-            const suggestLocation = await this.geminiService.getSuggestLocation(body)
-            return res.status(200).json({suggestLocation: suggestLocation})
+            const results = await this.geminiService.getSuggestLocation(body)
+            
+            return res.status(201).json(results)
         }catch(err){
             console.log(err);
             

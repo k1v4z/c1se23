@@ -62,8 +62,11 @@ module.exports = class WeatherService {
                 const weatherCondition = forecast.weather[0].description;
                 const windSpeed = forecast.speed;
                 const humidity = forecast.humidity;
+                const pressure = forecast.pressure;
+                const deg = forecast.deg;
+                const icon = forecast.weather[0].icon;
 
-                return { temperature, weatherCondition, windSpeed, humidity };
+                return { temperature, weatherCondition, windSpeed, humidity, pressure, deg, icon };
             } else {
                 console.error('No forecast data available for the provided date');
                 return null;

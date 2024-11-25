@@ -13,6 +13,7 @@ const loadExpressConfig = (app) => {
     //Config cors
     app.use(cors({
         origin: process.env.FRONT_END_ORIGIN,
+        allowedHeaders: ["Content-Type"],
         credentials: true
     }))
 }

@@ -11,5 +11,6 @@ module.exports = new class ActivityLocationRoute extends BaseRoute {
         this.router.post('/activity-location', ActivityLocationController.createActivityLocation)
         this.router.delete('/activity-location/:id', ActivityLocationController.deleteActivityLocation)
         this.router.patch('/activity-location/:id', ActivityLocationController.editActivityLocation)
+        this.router.get('/activity-location-by-address', ActivityLocationController.getActivityLocationByAddress)
     }
 }
