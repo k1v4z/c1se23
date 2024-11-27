@@ -29,7 +29,10 @@ module.exports = class UserRepository {
         const response = await prisma.users.create({
             data: {
                 username: user.username,
-                password: user.password
+                password: user.password,
+                name: user.name,
+                address: user.address,
+                status: user.status
             }
         })
 
@@ -52,7 +55,7 @@ module.exports = class UserRepository {
                 last_login: true,
             }
         })
-        return {users, totalPages}
+        return { users, totalPages }
     }
 
     async setLastLoginUser(username) {
@@ -75,6 +78,16 @@ module.exports = class UserRepository {
             },
             data: {
                 status: status
+            }
+        })
+
+        return response
+    }
+
+    async deleteUser(username) {
+        const response = await prisma.users.delete({
+            where: {
+                username: username
             }
         })
 
