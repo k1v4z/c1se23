@@ -127,7 +127,7 @@ module.exports = class GeminiService {
       .replace(/\n```/, "");
 
     const suggestLocation = JSON.parse(convertedResults);
-    
+
 
     for (const location of suggestLocation) {
       const locationType = location.locationType;
@@ -143,11 +143,11 @@ module.exports = class GeminiService {
       } catch (err) {
         if (err instanceof ExistedError) {
           const existingLocation = await this.activityLocationService.getActivityLocationByName(location.name, location.address);
-          
-          if(!existingLocation.id){
+
+          if (!existingLocation) {
             const result = await this.activityLocationService.createActivityLocation(location);
             location.id = result.id;
-          }else{
+          } else {
             location.id = existingLocation.id
           }
           continue;

@@ -25,14 +25,15 @@ model users {
   name         String?
   address      String?
   channelId    String?
-  role_id      String?      @unique
-  role         roles?       @relation(fields: [role_id], references: [id])
+  status       String?
+  last_login   DateTime?
   create_at    DateTime     @default(now())
   comments     comments[]
   posts        posts[]
   plans        plans[]
   slackTokenId String?      @unique
   slackToken   slackTokens?
+  roles        user_roles[]
 }
 
 model slackTokens {
@@ -46,8 +47,17 @@ model slackTokens {
 model roles {
   id               String             @id @default(uuid())
   name             String
-  users            users?
+  users            user_roles[]
   role_permissions role_permissions[]
+}
+
+model user_roles {
+  user_id String
+  role_id String
+  user    users @relation(fields: [user_id], references: [id])
+  role    roles @relation(fields: [role_id], references: [id])
+
+  @@id([user_id, role_id])
 }
 
 model permissions {

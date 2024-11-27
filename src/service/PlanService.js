@@ -15,6 +15,9 @@ module.exports = class PlanService {
     async createPlan(planBody) {
         try {
             const planValidate = MainPlanSchema.validateMainPlan(planBody)
+            console.log(planBody);
+            
+            
             if (!planValidate.success) {
                 const [err] = planValidate.error.errors
                 return {

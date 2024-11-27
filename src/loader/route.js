@@ -1,3 +1,4 @@
+
 //Load route
 const loadRoute = (app) => {
     console.log("Loading Express Route ...");
@@ -27,6 +28,9 @@ const loadRoute = (app) => {
 
     const GeminiRoute = require("../route/GeminiRoute");
     GeminiRoute.useRoutes('/api/v1', app)
+
+    const UserRoute = require("../route/UserRoute");
+    UserRoute.useRoutes('/api/v1', app)
 }
 
 module.exports = loadRoute

@@ -24,6 +24,8 @@ module.exports = class AuthService {
             if (!user) {
                 var hashPassword = this.passwordHashingService.hashPassword(authBody.password)
                 const userCreated = await this.authRepository.signUp(authBody.username, hashPassword)
+                await this.userService.setStatusUser(authBody.username, "Active")
+                
                 return {
                     code: resultCodes.register.success,
                     message: "Sign up successful",
@@ -59,6 +61,8 @@ module.exports = class AuthService {
             }
 
             const user = await this.userService.getUsername(authBody.username);
+            console.log(user);
+            
             //If user existed
             if (user) {
                 //Hash password
@@ -67,12 +71,15 @@ module.exports = class AuthService {
                 if (this.passwordHashingService.compareHashPassword(authBody.password, password)) {
                     const payload = {
                         userId: user.id,
-                        username: user.username
+                        username: user.username,
+                        role: user.roles[0].role_id
                     }
+                    
 
                     // IMPLEMENT LOGIC REFRESH TOKEN LATER
                     // ....
                     const accessToken = this.tokenService.generateAccessToken(payload)
+                    await this.userService.setLastLoginUser(authBody.username)
 
                     return {
                         code: resultCodes.login.success,
