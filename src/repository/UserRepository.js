@@ -52,9 +52,19 @@ module.exports = class UserRepository {
                 username: true,
                 last_login: true,
                 status: true,
-                last_login: true,
+                roles: {
+                    select: {
+                        role: {
+                            select: {
+                                id: true,
+                                name: true
+                            }
+                        }
+                    }
+                }
             }
         })
+
         return { users, totalPages }
     }
 
