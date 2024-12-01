@@ -139,17 +139,13 @@ module.exports = class GeminiService {
 
       try {
         const result = await this.activityLocationService.createActivityLocation(location);
+        
         location.id = result.id;
       } catch (err) {
         if (err instanceof ExistedError) {
           const existingLocation = await this.activityLocationService.getActivityLocationByName(location.name, location.address);
 
-          if (!existingLocation) {
-            const result = await this.activityLocationService.createActivityLocation(location);
-            location.id = result.id;
-          } else {
-            location.id = existingLocation.id
-          }
+          location.id = existingLocation.id;
           continue;
         }
       }

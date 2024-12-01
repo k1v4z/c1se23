@@ -16,8 +16,8 @@ module.exports = class PlanService {
         try {
             const planValidate = MainPlanSchema.validateMainPlan(planBody)
             console.log(planBody);
-            
-            
+
+
             if (!planValidate.success) {
                 const [err] = planValidate.error.errors
                 return {
@@ -39,6 +39,7 @@ module.exports = class PlanService {
 
             const [provinceResult] = await this.provinceService.getProvinceIdByName(provinceName)
             const [results] = await this.kindService.getKindIdByName(kindName) //array destructuring
+
             plan.kindId = results.id
             plan.provinceId = provinceResult.id
 
@@ -125,7 +126,7 @@ module.exports = class PlanService {
         try {
             const locationIds = activityLocations.map(location => location.id);
             const exist = await this.planRepository.checkActivityLocationsExist(planId, locationIds);
-            
+
             if (exist) {
                 return {
                     statusCode: planCodes.update.invalid,
@@ -150,12 +151,12 @@ module.exports = class PlanService {
     async removeActivityFromPlan(planId, activityId) {
         // Kiểm tra xem activity có tồn tại trong plan hay không
         const exist = await this.planRepository.checkActivityExistInPlan(planId, activityId);
-        if (!exist) 
+        if (!exist)
             throw new NotFoundError("Activity does not exist in the plan");
 
         // Xóa activity khỏi plan
         const updatedPlan = await this.planRepository.removeActivityFromPlan(planId, activityId);
         return updatedPlan;
     }
-    
+
 }

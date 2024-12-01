@@ -95,12 +95,30 @@ module.exports = class UserRepository {
     }
 
     async deleteUser(username) {
-        const response = await prisma.users.delete({
+        const user = await prisma.users.findUnique({
             where: {
                 username: username
             }
-        })
+        });
 
-        return response
+        if (!user) {
+            throw new Error(`User with username ${username} not found`);
+        }
+
+        // Delete related records in user_roles table
+        await prisma.user_roles.deleteMany({
+            where: {
+                user_id: user.id
+            }
+        });
+
+        // Delete the user
+        const response = await prisma.users.delete({
+            where: {
+                id: user.id
+            }
+        });
+
+        return response;
     }
 }
