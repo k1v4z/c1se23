@@ -16,7 +16,10 @@ module.exports = new class UserController {
     }
 
     getUsers = async (req, res) => {
-        const users = await this.userService.getUsers()
+        const { page, pageSize } = req.query
+        console.log(page, pageSize);
+        
+        const users = await this.userService.getUsers(page, pageSize)
         return res.status(200).json({ message: "Users fetched successfully", users })
     }
 

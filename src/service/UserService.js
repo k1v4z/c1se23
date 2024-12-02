@@ -15,9 +15,9 @@ module.exports = class UserService {
         }
     }
 
-    async getUsers() {
+    async getUsers(page, pageSize) {
         //Authorize later
-        const response = await this.userRepository.getUsers()
+        const response = await this.userRepository.getUsers(page, pageSize)
         return response
     }
 

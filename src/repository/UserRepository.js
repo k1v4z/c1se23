@@ -39,14 +39,18 @@ module.exports = class UserRepository {
         return response
     }
 
-    async getUsers(page = 1, pageSize = 10) {
-        const skip = (page - 1) * pageSize;
+    async getUsers(page, pageSize) {
+        if (!page || !pageSize) {
+            page = 1;
+            pageSize = 10;
+        }
+        const skip = (Number(page) - 1) * Number(pageSize);
         const totalUsers = await prisma.users.count()
-        const totalPages = Math.ceil(totalUsers / pageSize)
-
+        const totalPages = Math.ceil(totalUsers / Number(pageSize))
+        
         const users = await prisma.users.findMany({
-            skip: skip,
-            take: pageSize,
+            skip: Math.abs(skip),
+            take: Math.abs(pageSize),
             select: {
                 id: true,
                 username: true,
@@ -65,7 +69,7 @@ module.exports = class UserRepository {
             }
         })
 
-        return { users, totalPages }
+        return { users, totalPages, page: Number(page) }
     }
 
     async setLastLoginUser(username) {
