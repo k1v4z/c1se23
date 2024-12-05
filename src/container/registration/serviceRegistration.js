@@ -6,11 +6,18 @@ const repositoryNames = require("../../constants/repository_name/repositoryNames
 //init service container
 const serviceContainer = new ServiceContainer()
 
+// Passsword Hashing Service 
+const PasswordHashingService = require("../../service/PasswordHashingService");
+serviceContainer.register(serviceNames.PASSWORD_HASHING_SERVICE, () => {
+    return new PasswordHashingService()
+})
+
 // User Service
 const UserService = require("../../service/UserService");
-serviceContainer.register(serviceNames.USER_SERVICE, () => {
+serviceContainer.register(serviceNames.USER_SERVICE, (container) => {
     const userRepository = repositoryContainer.get(repositoryNames.USER_REPOSITORY)
-    return new UserService(userRepository) //inject
+    const passwordHashingService = container.get(serviceNames.PASSWORD_HASHING_SERVICE)
+    return new UserService(userRepository, passwordHashingService) //inject
 })
 
 // Token Service 
@@ -23,12 +30,6 @@ serviceContainer.register(serviceNames.TOKEN_SERVICE, () => {
 const DatePlanService = require("../../service/DatePlanService");
 serviceContainer.register(serviceNames.DATE_PLAN_SERVICE, () => {
     return new DatePlanService()
-})
-
-// Passsword Hashing Service 
-const PasswordHashingService = require("../../service/PasswordHashingService");
-serviceContainer.register(serviceNames.PASSWORD_HASHING_SERVICE, () => {
-    return new PasswordHashingService()
 })
 
 // Auth Service 

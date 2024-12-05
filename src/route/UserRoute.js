@@ -14,6 +14,9 @@ module.exports = new class UserRoute extends BaseRoute {
         this.router.delete('/users/:username', AuthMiddleware.authenticateUser, AuthMiddleware.authorizeRole(role.ADMIN), UserController.deleteUser)
         this.router.get('/user/search/:username', AuthMiddleware.authenticateUser, AuthMiddleware.authorizeRole(role.ADMIN), UserController.seacrhUser)
         this.router.put('/users/:username/status', AuthMiddleware.authenticateUser, AuthMiddleware.authorizeRole(role.ADMIN), UserController.setStatus)
+        this.router.put('/users/:username/password', AuthMiddleware.authenticateUser, UserController.changePassword)
+        this.router.post('/users/:username/slack-bot', AuthMiddleware.authenticateUser, UserController.addSlackBotCredentials)
+        this.router.put('/users/:username/role', AuthMiddleware.authenticateUser, AuthMiddleware.authorizeRole(role.ADMIN), UserController.setUserRole);
     }
 
 }

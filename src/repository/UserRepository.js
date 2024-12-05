@@ -26,7 +26,13 @@ module.exports = class UserRepository {
     }
 
     async addUser(user) {
-        const response = await prisma.users.create({
+        const role = await prisma.roles.findUnique({
+            where: {
+                name: user.role
+            }
+        });
+
+        const createdUser = await prisma.users.create({
             data: {
                 username: user.username,
                 password: user.password,
@@ -34,9 +40,17 @@ module.exports = class UserRepository {
                 address: user.address,
                 status: user.status
             }
-        })
+        });
 
-        return response
+        // Associate the user with the role in the user_roles table
+        await prisma.user_roles.create({
+            data: {
+                user_id: createdUser.id,
+                role_id: role.id
+            }
+        });
+
+        return createdUser;
     }
 
     async getUsers(page, pageSize) {
@@ -47,7 +61,7 @@ module.exports = class UserRepository {
         const skip = (Number(page) - 1) * Number(pageSize);
         const totalUsers = await prisma.users.count()
         const totalPages = Math.ceil(totalUsers / Number(pageSize))
-        
+
         const users = await prisma.users.findMany({
             skip: Math.abs(skip),
             take: Math.abs(pageSize),
@@ -124,5 +138,77 @@ module.exports = class UserRepository {
         });
 
         return response;
+    }
+
+    async changePassword(username, newPassword) {
+        const response = await prisma.users.update({
+            where: {
+                username: username
+            },
+            data: {
+                password: newPassword
+            }
+        })
+
+        return response
+    }
+
+    async addSlackbot(username, channelId, accessToken) {
+        const user = await prisma.users.findUnique({
+            where: {
+                username: username
+            }
+        });
+
+        if (!user) {
+            throw new Error(`User with username ${username} not found`);
+        }
+
+        // Use a transaction to create the slack token and update the user's slackTokenId
+        const response = await prisma.slackTokens.create({
+            data: {
+                accessToken: accessToken,
+                channelId: channelId,
+                user_id: user.id,
+            }
+        });
+
+        return response;
+    }
+
+    async setUserRole(username, newRole) {
+        // Fetch the user by username
+        const user = await prisma.users.findUnique({
+            where: {
+                username: username
+            }
+        });
+
+        if (!user) {
+            throw new Error(`User with username ${username} not found`);
+        }
+
+        // Fetch the new role ID based on the role name
+        const role = await prisma.roles.findUnique({
+            where: {
+                name: newRole
+            }
+        });
+
+        if (!role) {
+            throw new Error(`Role with name ${newRole} not found`);
+        }
+
+        // Update the user's role in the user_roles table
+        await prisma.user_roles.updateMany({
+            where: {
+                user_id: user.id
+            },
+            data: {
+                role_id: role.id
+            }
+        });
+
+        return { message: `User role updated to ${newRole}` };
     }
 }
