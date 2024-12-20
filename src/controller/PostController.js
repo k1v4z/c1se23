@@ -26,4 +26,39 @@ module.exports = new class PostController {
             return res.status(500).json({ message: 'Error creating post', error: err.message });
         }
     }
+
+    getPosts = async (req, res) => {
+        try {
+            const { page, limit } = req.query;
+            const posts = await this.postService.getPosts(page, limit);
+            return res.status(200).json({ posts });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json({ message: 'Error fetching posts', error: err.message });
+        }
+    }
+
+    updatePost = async (req, res) => {
+        const data = req.body;
+        const { id } = req.params;
+        try {
+            data.user_id = req.userId
+            const post = await this.postService.updatePost(id, data);
+            return res.status(200).json({ message: 'Post updated successfully', post });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json({ message: 'Error updating post', error: err.message });
+        }
+    }
+    
+    deletePost = async (req, res) => {
+        const { id } = req.params;
+        try {
+            await this.postService.deletePost(id, req.userId);
+            return res.status(200).json({ message: 'Post deleted successfully' });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json({ message: 'Error deleting post', error: err.message });
+        }
+    }
 }

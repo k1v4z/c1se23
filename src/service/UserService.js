@@ -11,7 +11,8 @@ module.exports = class UserService {
     async getUsername(username) {
         const user = await this.userRepository.getUsername(username)
         if (!user) {
-            throw new NotFoundError("User not found")
+            // throw new NotFoundError("User not found")
+            return null;
         } else {
             return user
         }

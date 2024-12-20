@@ -10,6 +10,9 @@ module.exports = new class PostRoute extends BaseRoute {
 
     initRoutes() {
         this.router.post('/post', AuthMiddleware.authenticateUser, PostController.createPost)
+        this.router.get('/posts', PostController.getPosts)
+        this.router.put('/post/:id', AuthMiddleware.authenticateUser, PostController.updatePost)
+        this.router.delete('/post/:id', AuthMiddleware.authenticateUser, PostController.deletePost)
     }
 
 }
