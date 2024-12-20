@@ -31,6 +31,12 @@ const loadRoute = (app) => {
 
     const UserRoute = require("../route/UserRoute");
     UserRoute.useRoutes('/api/v1', app)
+
+    const PostRoute = require("../route/PostRoute");
+    PostRoute.useRoutes('/api/v1', app)
+
+    const CommentRoute = require("../route/CommentRoute");
+    CommentRoute.useRoutes('/api/v1', app)
 }
 
 module.exports = loadRoute

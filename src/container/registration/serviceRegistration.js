@@ -97,8 +97,17 @@ serviceContainer.register(serviceNames.SLACK_SERVICE, () => {
     return new SlackService(geminiService)
 })
 
+const CommentService = require("../../service/CommentService");
+serviceContainer.register(serviceNames.COMMENT_SERVICE, (container) => {
+    const commentRepository = repositoryContainer.get(repositoryNames.COMMENT_REPOSITORY)
+    return new CommentService(commentRepository)
+})
 
-
-
+const PostService = require("../../service/PostService");
+serviceContainer.register(serviceNames.POST_SERVICE, (container) => {
+    const postRepository = repositoryContainer.get(repositoryNames.POST_REPOSITORY)
+    const commentService = container.get(serviceNames.COMMENT_SERVICE)
+    return new PostService(postRepository, commentService)
+})
 
 module.exports = serviceContainer

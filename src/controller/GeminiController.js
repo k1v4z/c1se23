@@ -9,15 +9,15 @@ module.exports = new class GemininiController {
         this.geminiService = serviceContainer.get(serviceNames.GEMINI_SERVICE)
     }
 
-    getSuggestLocation = async(req, res) => {
-        try{
+    getSuggestLocation = async (req, res) => {
+        try {
             const body = req.body
             const results = await this.geminiService.getSuggestLocation(body)
-            
+
             return res.status(201).json(results)
-        }catch(err){
+        } catch (err) {
             console.log(err);
-            
+
             return res.status(500).json({
                 message: "Internal Server Error",
             })

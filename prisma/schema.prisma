@@ -80,7 +80,7 @@ model comments {
   user_id      String
   user         users    @relation(fields: [user_id], references: [id])
   comment_date DateTime @default(now())
-  content      String
+  content      String @db.Text
   post_id      String
   channel_id   String
   post         posts    @relation(fields: [post_id], references: [id])
@@ -94,7 +94,7 @@ model posts {
   user_id     String
   user        users         @relation(fields: [user_id], references: [id])
   post_date   DateTime      @default(now())
-  update_date DateTime      @updatedAt
+  update_date DateTime      @updatedAt @default(now())
   post_images post_images[]
 }
 

@@ -39,4 +39,19 @@ const ActivityLocationRepository = require("../../repository/ActivityLocationRep
 repositoryContainer.register(repositoryNames.ACTIVITY_LOCATION_REPOSITORY, () => {
     return new ActivityLocationRepository()
 })
+
+
+
+//Comment Repo
+const CommentRepository = require("../../repository/CommentRepository");
+repositoryContainer.register(repositoryNames.COMMENT_REPOSITORY, () => {
+    return new CommentRepository()
+})
+
+//Post Repo
+const PostRepository = require("../../repository/PostRepository")
+repositoryContainer.register(repositoryNames.POST_REPOSITORY, () => {
+    return new PostRepository()
+})
+
 module.exports = repositoryContainer

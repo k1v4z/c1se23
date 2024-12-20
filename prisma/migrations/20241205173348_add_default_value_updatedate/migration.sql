@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `posts` MODIFY `update_date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);

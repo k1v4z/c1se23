@@ -12,4 +12,6 @@ module.exports = {
     SLACK_SERVICE: 'slackService',
     GEMINI_SERVICE: 'geminiService',
     WEATHER_SERVICE: 'weatherService',
+    COMMENT_SERVICE: 'commentService',
+    POST_SERVICE: 'postService',
 }
