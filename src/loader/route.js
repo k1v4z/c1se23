@@ -37,6 +37,9 @@ const loadRoute = (app) => {
 
     const CommentRoute = require("../route/CommentRoute");
     CommentRoute.useRoutes('/api/v1', app)
+
+    const SlackRoute = require("../route/SlackRoute");
+    SlackRoute.useRoutes('/api/v1', app)
 }
 
 module.exports = loadRoute

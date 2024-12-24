@@ -53,8 +53,9 @@ module.exports = class GeminiService {
 
     const prompt = `
       Role: Generator
-      Context: Location: ${province}, weather forecast: ${weatherData.weatherCondition}, ${weatherData.temperature},${weatherData.windSpeed}, ${weatherData.humidity}, plan date: ${planDate}
+      Context: Location: ${province}, weather forecast: ${weatherData.weatherCondition}, ${weatherData.temperature},${weatherData.windSpeed}, ${weatherData.humidity}, plan date: ${planDate}, Type: ${data.type}
       Task: Generate list suggestion to protect health of tourist  based on location and weather forecast in context given above. Example: Storm should recommend user in door. Heavy rain recommend user location in door like Restaurant. vincom, ... etc.
+      If have type data, only generate location match with this type. Example: If type is check in, only generate location belong to check in type
       Output format: {
       "id": ""
       "name": Name of location and unaccented letters ,
@@ -68,7 +69,7 @@ module.exports = class GeminiService {
       "money": money suggest for location (VND)
       "start_date": ISO string (must be greater or equal plan date)
       "end_date": ISO string (must be greater or equal plan date)
-      "locationType": Must be same as one of theses ['Accomodation','Food','Museum', 'Visit']
+      "locationType": Must be same as one of theses ['Accomodation','Food','Museum', 'Visit','Checkin']
       }
       Example output json: [{
       "id": ""
@@ -130,12 +131,12 @@ module.exports = class GeminiService {
 
 
     for (const location of suggestLocation) {
-      const locationType = location.locationType;
-      if (locationTypeData.LocationType[locationType]) {
-        const images = locationTypeData.LocationType[locationType];
-        const randomImage = images[Math.floor(Math.random() * images.length)];
-        location.imageUrl = randomImage;
-      }
+      // const locationType = location.locationType;
+      // if (locationTypeData.LocationType[locationType]) {
+      //   const images = locationTypeData.LocationType[locationType];
+      //   const randomImage = images[Math.floor(Math.random() * images.length)];
+      //   location.imageUrl = randomImage;
+      // }
 
       try {
         const result = await this.activityLocationService.createActivityLocation(location);

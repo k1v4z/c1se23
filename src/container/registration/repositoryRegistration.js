@@ -41,7 +41,6 @@ repositoryContainer.register(repositoryNames.ACTIVITY_LOCATION_REPOSITORY, () =>
 })
 
 
-
 //Comment Repo
 const CommentRepository = require("../../repository/CommentRepository");
 repositoryContainer.register(repositoryNames.COMMENT_REPOSITORY, () => {
@@ -52,6 +51,11 @@ repositoryContainer.register(repositoryNames.COMMENT_REPOSITORY, () => {
 const PostRepository = require("../../repository/PostRepository")
 repositoryContainer.register(repositoryNames.POST_REPOSITORY, () => {
     return new PostRepository()
+})
+
+const SlackRepository = require("../../repository/SlackRepository")
+repositoryContainer.register(repositoryNames.SLACK_REPOSITORY, () => {
+    return new SlackRepository()
 })
 
 module.exports = repositoryContainer

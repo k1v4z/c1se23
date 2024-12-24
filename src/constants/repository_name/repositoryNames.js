@@ -7,4 +7,5 @@ module.exports = {
     ACTIVITY_LOCATION_REPOSITORY: 'activityLocationRepository',
     POST_REPOSITORY: 'postRepository',
     COMMENT_REPOSITORY: 'commentRepository',
+    SLACK_REPOSITORY: 'slackRepository'
 }

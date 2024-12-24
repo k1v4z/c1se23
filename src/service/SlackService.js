@@ -1,21 +1,19 @@
 const { WebClient } = require('@slack/web-api');
 
 require("dotenv").config({ path: "../../.env" });
-const client = new WebClient(process.env.SLACK_BOT_TOKEN);
 
 module.exports = class SlackService {
-    constructor(geminiService) {
+    constructor(geminiService, slackRepository) {
         this.geminiService = geminiService;
+        this.slackRepository = slackRepository;
     }
 
     async sendSlackMessage(messageBody) {
-        //Step 1: Get activity location (address) (join 2 table activity & activity location) from database which have start date > current date 1 day
-        //Step 2: Xử lý kết quả của address ví dụ  4 An Thuong 3, Ngu Hanh Son, Da Nang thành Da Nang bằng split
-        //Step 3: Gửi request lên Gemini API để lấy thông tin thời tiết và recommendation
-        //Step 4: Lấy access token và channel từ database của cái người mà set 1 cái activities trên plan (join 5 table )
-        //Step 5: Gửi message qua Slack API
-        const province = 'Ho Chi Minh';
+        //Join bảng để get plan, nếu tồn tại
+        const province = messageBody.province;
         const message = await this.geminiService.getRecommendation(province);
+        console.log('Sending message to Slack:', messageBody);
+        const client = new WebClient(messageBody.accessToken);
 
         const block = [
             {
@@ -30,7 +28,7 @@ module.exports = class SlackService {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": `*Hey <@${messageBody.channel}>! Here's your weather update for your upcoming plan.*\n\n*🗓️ Date:* 2024-11-13\n*📍 Location:* ${province}\n\n*🌦️Weather Forecast:* ${message.weather_forecast}`
+                    "text": `*Hey <@${messageBody.channel}>! Here's your weather update for your upcoming plan.*\n\n*🗓️ Date:* ${messageBody.date}\n*📍 Location:* ${province}\n\n*🌦️Weather Forecast:* ${message.weather_forecast}`
                 }
             },
             {
@@ -63,6 +61,7 @@ module.exports = class SlackService {
         try {
             await client.chat.postMessage({
                 channel: messageBody.channel,
+                text: " ",
                 blocks: block
             });
 
@@ -71,5 +70,9 @@ module.exports = class SlackService {
             console.error('Error sending message to Slack:', error);
             return false;
         }
+    }
+
+    async addSlackCredentials(userId, channelId, accessToken) {
+        return this.slackRepository.addSlackCredentials(userId, channelId, accessToken);
     }
 };

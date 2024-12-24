@@ -94,7 +94,8 @@ serviceContainer.register(serviceNames.GEMINI_SERVICE, () => {
 const SlackService = require("../../service/SlackService");
 serviceContainer.register(serviceNames.SLACK_SERVICE, () => {
     const geminiService = serviceContainer.get(serviceNames.GEMINI_SERVICE)
-    return new SlackService(geminiService)
+    const slackRepository = repositoryContainer.get(repositoryNames.SLACK_REPOSITORY)
+    return new SlackService(geminiService, slackRepository)
 })
 
 const CommentService = require("../../service/CommentService");
