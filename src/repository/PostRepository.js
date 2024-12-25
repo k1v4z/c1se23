@@ -15,7 +15,7 @@ module.exports = class PostRepository {
                     content: data.content,
                     post_images: imageUrls && imageUrls.length > 0 ? {
                         create: imageUrls
-                    } : undefined0
+                    } : undefined
                 },
                 include: {
                     post_images: true
